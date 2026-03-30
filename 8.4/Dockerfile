@@ -84,4 +84,4 @@ COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 
 WORKDIR /var/www/html
 
-CMD ["php-fpm"]
+CMD ["php-fpm", "--allow-to-run-as-root"]
