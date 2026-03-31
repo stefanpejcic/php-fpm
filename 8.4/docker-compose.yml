@@ -1,7 +1,7 @@
 services:
   php-fpm-8.4:
     build:
-      context: ./php84
+      context: ./8.4
       dockerfile: Dockerfile
     image: openpanel/php:8.4-fpm
     container_name: php-fpm-8.4
