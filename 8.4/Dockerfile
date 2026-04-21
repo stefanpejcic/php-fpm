@@ -78,10 +78,12 @@ RUN mkdir -p /var/run/php && chmod 755 /var/run/php
 
 # FPM pool config
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # FPM global config - routes startup/error/stop logs to Docker
 COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 
 WORKDIR /var/www/html
 
-CMD ["php-fpm", "--allow-to-run-as-root"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
