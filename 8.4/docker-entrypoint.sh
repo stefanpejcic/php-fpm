@@ -72,4 +72,4 @@ sed -i "s|^php_admin_value\[memory_limit\].*|php_admin_value[memory_limit] = ${P
 sed -i "s|^php_admin_value\[opcache.memory_consumption\].*|php_admin_value[opcache.memory_consumption] = ${OPCACHE_MB}|" "$POOL_CONF"
 
 # foreground, no daemonize
-exec php-fpm84 --nodaemonize --force-stderr
+exec ["php-fpm", "--nodaemonize", "--force-stderr", "--allow-to-run-as-root"]
