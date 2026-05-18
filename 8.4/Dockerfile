@@ -1,41 +1,28 @@
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm-bookworm
 
-# Runtime dependencies
-RUN apk add --no-cache \
-    libpng \
-    libjpeg-turbo \
-    libwebp \
-    freetype \
-    icu-libs \
-    tidyhtml-libs \
-    yaml \
-    libzip \
-    util-linux \
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libwebp-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libtidy-dev \
+    libyaml-dev \
+    libzip-dev \
+    libpq-dev \
+    libmagickwand-dev \
     imagemagick \
-    imagemagick-libs \
-    libpq \
-    libgomp \
-    libintl \
-    gettext-libs \
-    libsodium
+    libgomp1 \
+    gettext \
+    libgettextpo-dev \
+    libsodium-dev \
+    unzip \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Build dependencies - removed after compilation
-RUN apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        libpng-dev \
-        libjpeg-turbo-dev \
-        libwebp-dev \
-        freetype-dev \
-        icu-dev \
-        tidyhtml-dev \
-        yaml-dev \
-        libzip-dev \
-        util-linux-dev \
-        imagemagick-dev \
-        postgresql-dev \
-        gettext-dev \
-        libsodium-dev \
-    && docker-php-ext-configure gd \
+# PHP extensions
+RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
         --with-webp \
@@ -54,14 +41,17 @@ RUN apk add --no-cache --virtual .build-deps \
         pgsql \
         sodium \
         tidy \
-        zip \
-    && pecl install igbinary \
-    && pecl install msgpack \
-    && pecl install apcu \
+        zip
+
+# PECL extensions
+RUN pecl install \
+        igbinary \
+        msgpack \
+        apcu \
+        yaml \
+        uuid \
+        imagick \
     && pecl install --configureoptions 'enable-redis-igbinary="yes" enable-redis-msgpack="yes"' redis \
-    && pecl install yaml \
-    && pecl install uuid \
-    && pecl install imagick \
     && docker-php-ext-enable \
         igbinary \
         msgpack \
@@ -69,9 +59,7 @@ RUN apk add --no-cache --virtual .build-deps \
         redis \
         yaml \
         uuid \
-        imagick \
-    && apk del .build-deps \
-    && rm -rf /tmp/pear /tmp/* /var/cache/apk/*
+        imagick
 
 # Socket directory
 RUN mkdir -p /var/run/php && chmod 755 /var/run/php
@@ -81,7 +69,7 @@ COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# FPM global config - routes startup/error/stop logs to Docker
+# FPM global config
 COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 
 WORKDIR /var/www/html
