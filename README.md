@@ -1,2 +1,2 @@
 # php-fpm
-Alpine based php-fpm docker images
+slim php-fpm docker images
