@@ -54,7 +54,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         imagick \
     && rm -rf /var/lib/apt/lists/* /tmp/pear
 
-FROM php:8.4-fpm-bookworm AS final
+FROM debian:bookworm-slim AS final
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng16-16 \
@@ -71,18 +71,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgomp1 \
         libsodium23 \
         ca-certificates \
-    && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
+    && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
-COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --from=builder /usr/local/bin/php /usr/local/bin/php
+COPY --from=builder /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
+COPY --from=builder /usr/local/lib/php/ /usr/local/lib/php/
+COPY --from=builder /usr/local/etc/php/ /usr/local/etc/php/
+COPY --from=builder /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf
+COPY --from=builder /usr/local/etc/php-fpm.d/ /usr/local/etc/php-fpm.d/
+COPY --from=builder /usr/local/bin/docker-php-* /usr/local/bin/
 
-# -v /path/to/ioncube/ioncube_loader_lin_8.4.so:/usr/local/lib/php/extensions/no-debug-non-zts-XXXXXXXX/ioncube_loader_lin_8.4.so
-# Add to php.ini: zend_extension=ioncube_loader_lin_8.4.so
-# IonCube must be the FIRST zend_extension loaded
-
-RUN mkdir -p /usr/local/lib/ioncube
-
-RUN mkdir -p /var/run/php && chmod 755 /var/run/php
+RUN mkdir -p /var/run/php && chmod 755 /var/run/php \
+    && mkdir -p /var/www/html && chown www-data:www-data /var/www/html
 
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY php-fpm.conf /usr/local/etc/php-fpm.conf
