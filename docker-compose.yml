@@ -19,8 +19,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "${PHP_FPM_8_4_CPU:-0.125}"
-          memory: "${PHP_FPM_8_4_RAM:-0.25G}"
+          cpus: "${PHP_FPM_8_4_CPU:-0.5}"
+          memory: "${PHP_FPM_8_4_RAM:-0.5G}"
           pids: 100
     networks:
       - www
