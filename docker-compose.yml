@@ -1,8 +1,5 @@
 services:
   php-fpm-8.4:
-    build:
-      context: ./8.4
-      dockerfile: Dockerfile
     image: openpanel/php-fpm:8.4
     container_name: php-fpm-8.4
     restart: unless-stopped
