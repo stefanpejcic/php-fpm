@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-POOL_CONF="/etc/php84/php-fpm.d/www.conf"
+POOL_CONF="/usr/local/etc/php-fpm.d/www.conf"
 RESERVE_MB=64
 WORKER_MB=80
 PHP_MEMORY_MB=96
