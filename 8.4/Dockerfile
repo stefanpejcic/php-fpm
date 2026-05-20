@@ -84,7 +84,8 @@ COPY --from=builder /usr/local/bin/docker-php-* /usr/local/bin/
 RUN mkdir -p /var/run/php && chmod 755 /var/run/php \
     && mkdir -p /var/www/html && chown www-data:www-data /var/www/html
 
-COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY www.conf /etc/php84/php-fpm.d/www.conf
+#/usr/local/etc/php-fpm.d/www.conf
 COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
