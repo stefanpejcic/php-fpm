@@ -13,9 +13,6 @@ if ! docker buildx version >/dev/null 2>&1; then
   docker buildx version
 fi
 
-#docker buildx inspect --bootstrap
-
-# --tag openpanel/php-fpm:latest --tag openpanel/php-fpm:$PHP_VERSION_TAG-$(date +%Y%m%d)
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --build-arg PHP_VERSION="$PHP_VERSION_TAG" \
