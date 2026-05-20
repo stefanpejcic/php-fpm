@@ -15,7 +15,6 @@ fi
 
 #docker buildx inspect --bootstrap
 
-cd "$PHP_VERSION_TAG"
 # --tag openpanel/php-fpm:latest --tag openpanel/php-fpm:$PHP_VERSION_TAG-$(date +%Y%m%d)
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
