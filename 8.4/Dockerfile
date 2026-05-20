@@ -1,4 +1,5 @@
-FROM php:8.4-fpm-bookworm AS builder
+ARG PHP_VERSION=8.4
+FROM php:${PHP_VERSION}-fpm-bookworm AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng-dev \
