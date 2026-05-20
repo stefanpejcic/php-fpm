@@ -1,6 +1,5 @@
 ARG PHP_VERSION=8.4
 FROM php:${PHP_VERSION}-fpm-bookworm AS builder
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng-dev \
         libjpeg62-turbo-dev \
@@ -11,7 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libyaml-dev \
         libzip-dev \
         libpq-dev \
-        libmagickwand-dev \
         libsodium-dev \
         unzip \
         git \
@@ -41,7 +39,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         apcu \
         yaml \
         uuid \
-        imagick \
     && pecl install \
         --configureoptions 'enable-redis-igbinary="yes" enable-redis-msgpack="yes"' \
         redis \
@@ -52,11 +49,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         redis \
         yaml \
         uuid \
-        imagick \
     && rm -rf /var/lib/apt/lists/* /tmp/pear
-
 FROM debian:bookworm-slim AS final
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng16-16 \
         libjpeg62-turbo \
@@ -67,8 +61,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libyaml-0-2 \
         libzip4 \
         libpq5 \
-        libmagickwand-6.q16-6 \
-        imagemagick \
         libgomp1 \
         libsodium23 \
         libreadline8 \
@@ -78,7 +70,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libargon2-1 \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-
 COPY --from=builder /usr/local/bin/php /usr/local/bin/php
 COPY --from=builder /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=builder /usr/local/lib/php/ /usr/local/lib/php/
@@ -86,14 +77,9 @@ COPY --from=builder /usr/local/etc/php/ /usr/local/etc/php/
 COPY --from=builder /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY --from=builder /usr/local/etc/php-fpm.d/ /usr/local/etc/php-fpm.d/
 COPY --from=builder /usr/local/bin/docker-php-* /usr/local/bin/
-
-RUN mkdir -p /var/run/php && chmod 755 /var/run/php \
-    && mkdir -p /var/www/html && chown www-data:www-data /var/www/html
-
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
-
 WORKDIR /var/www/html
 ENTRYPOINT ["/docker-entrypoint.sh"]
