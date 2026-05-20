@@ -70,6 +70,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         imagemagick \
         libgomp1 \
         libsodium23 \
+        libreadline8 \
+        libsqlite3-0 \
+        libcurl4 \
+        libonig5 \
+        libargon2-1 \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
