@@ -207,21 +207,21 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 <!-- status:start -->
 | Tag | PHP | Debian | PHP support | Download amd64 / arm64 | Built (UTC) | Build time | Vulns C / H / M / L | Fixable C/H | Extensions |
 |---|---|---|---|---|---|---|---|---|---|
-| `openpanel/php-fpm:5.6` | - | - | ⛔ EOL 2018-12 | 67 MB / 63 MB | 2026-11-17 20:30 | 2m49s / 2m34s | - | - | - |
-| `openpanel/php-fpm:7.0` | - | - | ⛔ EOL 2019-01 | 71 MB / 66 MB | 2026-11-17 20:31 | 2m05s / 2m47s | - | - | - |
-| `openpanel/php-fpm:7.1` | - | - | ⛔ EOL 2019-12 | 73 MB / 71 MB | 2026-11-17 20:20 | 2m58s / 2m54s | - | - | - |
-| `openpanel/php-fpm:7.2` | - | - | ⛔ EOL 2020-11 | 74 MB / 72 MB | 2026-11-17 20:20 | 2m29s / 2m45s | - | - | - |
-| `openpanel/php-fpm:7.3` | - | - | ⛔ EOL 2021-12 | 72 MB / 71 MB | 2026-11-17 20:31 | 2m55s / 2m32s | - | - | - |
-| `openpanel/php-fpm:7.4` | - | - | ⛔ EOL 2022-11 | 71 MB / 69 MB | 2026-11-17 20:20 | 3m04s / 2m27s | - | - | - |
-| `openpanel/php-fpm:8.0` | - | - | ⛔ EOL 2023-11 | 72 MB / 70 MB | 2026-11-17 20:20 | 2m08s / 2m33s | - | - | - |
-| `openpanel/php-fpm:8.1` | - | - | ⛔ EOL 2025-12 | 86 MB / 85 MB | 2026-11-17 20:20 | 1m52s / 2m40s | - | - | - |
-| `openpanel/php-fpm:8.2` | - | - | 🟡 security until 2026-12 | 86 MB / 85 MB | 2026-11-17 20:31 | 2m02s / 2m44s | - | - | - |
-| `openpanel/php-fpm:8.3` | - | - | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-17 20:31 | 3m01s / 3m28s | - | - | - |
-| `openpanel/php-fpm:8.4` | - | - | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-17 20:31 | 3m03s / 2m54s | - | - | - |
-| `openpanel/php-fpm:8.5` | - | - | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-17 20:31 | 3m19s / 3m33s | - | - | - |
-| `openpanel/php-fpm:8.6` | - | - | 🧪 pre-release | 92 MB / 90 MB | 2026-11-17 20:31 | 2m37s / 3m44s | - | - | - |
+| `openpanel/php-fpm:5.6` | - | - | ⛔ EOL 2018-12 | 67 MB / 63 MB | 2026-11-17 20:30 | 2m49s / 2m33s | - | - | - |
+| `openpanel/php-fpm:7.0` | - | - | ⛔ EOL 2019-01 | 71 MB / 66 MB | 2026-11-17 21:54 | 2m05s / 2m43s | - | - | - |
+| `openpanel/php-fpm:7.1` | - | - | ⛔ EOL 2019-12 | 73 MB / 71 MB | 2026-11-17 21:55 | 3m03s / 3m04s | - | - | - |
+| `openpanel/php-fpm:7.2` | - | - | ⛔ EOL 2020-11 | 74 MB / 72 MB | 2026-11-17 21:55 | 3m04s / 2m34s | - | - | - |
+| `openpanel/php-fpm:7.3` | - | - | ⛔ EOL 2021-12 | 72 MB / 71 MB | 2026-11-17 21:54 | 1m57s / 3m02s | - | - | - |
+| `openpanel/php-fpm:7.4` | - | - | ⛔ EOL 2022-11 | 71 MB / 69 MB | 2026-11-17 21:54 | 2m50s / 2m36s | - | - | - |
+| `openpanel/php-fpm:8.0` | - | - | ⛔ EOL 2023-11 | 72 MB / 70 MB | 2026-11-17 21:54 | 2m09s / 2m51s | - | - | - |
+| `openpanel/php-fpm:8.1` | - | - | ⛔ EOL 2025-12 | 86 MB / 85 MB | 2026-11-17 21:54 | 1m52s / 2m51s | - | - | - |
+| `openpanel/php-fpm:8.2` | - | - | 🟡 security until 2026-12 | 86 MB / 85 MB | 2026-11-17 21:54 | 2m04s / 2m46s | - | - | - |
+| `openpanel/php-fpm:8.3` | - | - | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-17 21:55 | 2m21s / 2m42s | - | - | - |
+| `openpanel/php-fpm:8.4` | - | - | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-17 21:54 | 2m54s / 2m57s | - | - | - |
+| `openpanel/php-fpm:8.5` | - | - | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-17 21:54 | 2m31s / 3m17s | - | - | - |
+| `openpanel/php-fpm:8.6` | - | - | 🧪 pre-release | 92 MB / 90 MB | 2026-11-17 21:54 | 3m26s / 3m44s | - | - | - |
 
-_Updated automatically by the build workflow, last run 2026-11-17 20:54 UTC._
+_Updated automatically by the build workflow, last run 2026-11-17 21:56 UTC._
 <!-- status:end -->
 
 ## FAQ
