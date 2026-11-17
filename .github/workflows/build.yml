@@ -97,9 +97,13 @@ jobs:
         shell: bash
         run: |
           set -eo pipefail
-          docker buildx build $(cat build.args) \
-            --output type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true \
-            --metadata-file meta.json . 2>&1 | tee push.log
+          # Docker Hub answers 429 when its rate limit is hit, retry with a pause before giving up
+          for i in 1 2 3; do
+            docker buildx build $(cat build.args) \
+              --output type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true \
+              --metadata-file meta.json . > push.log 2>&1 && break
+            tail -5 push.log; [ $i = 3 ] && exit 1; sleep $((i * 60))
+          done
           jq -r '."containerimage.digest"' meta.json > digests/${{ matrix.arch }}
           cat digests/${{ matrix.arch }}
 
