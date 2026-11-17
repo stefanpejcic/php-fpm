@@ -1,0 +1,123 @@
+name: Build and publish
+
+# Nightly rebuild of every PHP version (picks up new PHP patch releases, Debian security
+# updates and new extension versions), plus manual runs from the Actions tab.
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: "PHP versions to build, space separated (empty = all from versions.txt)"
+        required: false
+        default: ""
+  push:
+    branches: [main]
+    paths: ["Dockerfile", "build/**", "rootfs/**", "versions.txt", ".github/workflows/build.yml"]
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: openpanel/php-fpm
+
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      include: ${{ steps.m.outputs.include }}
+      versions: ${{ steps.m.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        env:
+          WANT: ${{ github.event.inputs.versions }}
+        run: |
+          set -euo pipefail
+          exists() { curl -fsSL -o /dev/null "https://hub.docker.com/v2/repositories/library/php/tags/$1"; }
+          rows=()
+          versions=()
+          while read -r v base fallback composer; do
+            [[ -z "$v" || "$v" == \#* ]] && continue
+            if [[ -n "${WANT// /}" && " $WANT " != *" $v "* ]]; then continue; fi
+            if [[ "$fallback" != "-" ]] && ! exists "$base"; then base="$fallback"; fi
+            versions+=("\"$v\"")
+            for arch in amd64 arm64; do
+              runner=ubuntu-24.04; [[ $arch == arm64 ]] && runner=ubuntu-24.04-arm
+              rows+=("{\"version\":\"$v\",\"base\":\"$base\",\"composer\":\"$composer\",\"arch\":\"$arch\",\"runner\":\"$runner\"}")
+            done
+          done < versions.txt
+          [[ ${#rows[@]} -gt 0 ]] || { echo "no matching versions"; exit 1; }
+          echo "include=[$(IFS=,; echo "${rows[*]}")]" >> "$GITHUB_OUTPUT"
+          echo "versions=[$(IFS=,; echo "${versions[*]}")]" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: matrix
+    name: ${{ matrix.version }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.matrix.outputs.include) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and test
+        run: |
+          printf '%s\n' \
+            --build-arg PHP_VERSION=${{ matrix.version }} \
+            --build-arg BASE_TAG=${{ matrix.base }} \
+            --build-arg COMPOSER_VERSION=${{ matrix.composer }} \
+            --build-arg VCS_REF=${GITHUB_SHA::7} \
+            --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) > build.args
+          docker buildx build --pull --load $(cat build.args) -t test:${{ matrix.version }} .
+          FULL=1 ./test.sh test:${{ matrix.version }}
+
+      - name: Push by digest (same build, from cache)
+        run: |
+          docker buildx build $(cat build.args) \
+            --output type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true \
+            --metadata-file meta.json .
+          mkdir -p digests
+          jq -r '."containerimage.digest"' meta.json > digests/${{ matrix.arch }}
+          cat digests/${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ matrix.version }}-${{ matrix.arch }}
+          path: digests/${{ matrix.arch }}
+          retention-days: 1
+
+  publish:
+    needs: [matrix, build]
+    if: always() && needs.matrix.result == 'success'
+    name: publish ${{ matrix.version }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.matrix.outputs.versions) }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: digest-${{ matrix.version }}-*
+          merge-multiple: true
+          path: digests
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Create multi-arch tag ${{ env.IMAGE }}:${{ matrix.version }}
+        run: |
+          # only publish when both architectures built and passed tests, otherwise the old tag stays
+          [ -s digests/amd64 ] && [ -s digests/arm64 ] || { echo "missing an architecture, not publishing"; exit 1; }
+          docker buildx imagetools create -t ${IMAGE}:${{ matrix.version }} \
+            ${IMAGE}@$(cat digests/amd64) ${IMAGE}@$(cat digests/arm64)
+          docker buildx imagetools inspect ${IMAGE}:${{ matrix.version }}

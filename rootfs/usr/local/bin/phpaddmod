@@ -1,0 +1,38 @@
+#!/bin/sh
+# Install and enable PHP extensions: phpaddmod <ext> [ext...]
+# Same command name/behaviour OpenPanel used with shinsenter/php, backed by install-php-extensions.
+[ $# -eq 0 ] && { echo "Usage: ${0##*/} <extension> [extension...]   e.g. ${0##*/} imagick soap" >&2; exit 1; }
+
+# re-enable extensions disabled with *.ini.disabled or commented out
+for m; do
+    for f in "$PHP_INI_DIR"/conf.d/*"$m"*.ini.disabled; do
+        [ -e "$f" ] && mv "$f" "${f%.disabled}"
+    done
+    sed -i "/^; *\(zend_\)\?extension *= *$m\(\.so\)\?\s*$/s/^; *//" "$PHP_INI_DIR"/conf.d/*.ini 2>/dev/null
+done
+
+installed="$(php -m 2>/dev/null | grep -v '^\[' | tr '[:upper:]' '[:lower:]')"
+new=""
+for m; do
+    lm="$(echo "$m" | tr '[:upper:]' '[:lower:]')"
+    if printf '%s\n' "$installed" | grep -qx "$lm"; then
+        echo "Extension $m is already installed, skipping."
+    else
+        new="$new $m"
+    fi
+done
+[ -z "$new" ] && exit 0
+
+export DEBIAN_FRONTEND=noninteractive
+. /etc/os-release
+case "$VERSION_CODENAME" in jessie|stretch|buster|bullseye) export IPE_GD_WITHOUTAVIF=1 ;; esac
+# the image ships without a compiler, bring it back on first use
+if ! command -v gcc >/dev/null 2>&1; then
+    echo "Installing build tools..."
+    apt-get update -q && apt-get install -y -q --no-install-recommends $PHPIZE_DEPS || exit 1
+fi
+# shellcheck disable=SC2086
+install-php-extensions $new
+rc=$?
+rm -rf /var/lib/apt/lists/* /tmp/pear 2>/dev/null
+exit $rc

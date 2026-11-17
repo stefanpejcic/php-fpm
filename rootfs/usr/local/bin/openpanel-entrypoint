@@ -1,0 +1,83 @@
+#!/bin/sh
+# openpanel/php-fpm entrypoint - https://github.com/stefanpejcic/php-fpm
+# Only writes one small pool file and execs php-fpm: no chown, no cron, no hooks, no package installs.
+set -e
+
+# `docker run image -F` style: flags only means "php-fpm <flags>"
+[ "${1#-}" != "$1" ] && set -- php-fpm "$@"
+
+if [ "$1" = php-fpm ] || [ "$1" = /usr/local/sbin/php-fpm ]; then
+    user="${APP_USER:-www-data}"
+    group="${APP_GROUP:-$user}"
+
+    # size the pool from this container's cgroup memory limit (host RAM when unlimited)
+    worker_mb="${PHPFPM_WORKER_MB:-64}"
+    reserve_mb="${PHPFPM_RESERVE_MB:-64}"
+    cap="${PHPFPM_MAX_CHILDREN_CAP:-256}"
+    mem_max="$(cat /sys/fs/cgroup/memory.max 2>/dev/null || true)"
+    case "$mem_max" in
+        ''|*[!0-9]*) mem_max="$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes 2>/dev/null || true)" ;;
+    esac
+    host_mb=$(awk '/^MemTotal:/{print int($2/1024)}' /proc/meminfo)
+    case "$mem_max" in
+        ''|*[!0-9]*) ram_mb=$host_mb ;;
+        *) ram_mb=$(( mem_max / 1024 / 1024 )); [ "$ram_mb" -gt "$host_mb" ] && ram_mb=$host_mb ;;
+    esac
+
+    max_children=$(( (ram_mb - reserve_mb) / worker_mb ))
+    [ "$max_children" -lt 2 ] && max_children=2
+    [ "$max_children" -gt "$cap" ] && max_children=$cap
+    start=$(( max_children / 4 ));    [ "$start" -lt 2 ] && start=2
+    min_spare=$(( max_children / 8 )); [ "$min_spare" -lt 1 ] && min_spare=1
+    max_spare=$(( max_children / 2 )); [ "$max_spare" -le "$min_spare" ] && max_spare=$(( min_spare + 1 ))
+    [ "$start" -gt "$max_spare" ] && start=$max_spare
+    [ "$start" -lt "$min_spare" ] && start=$min_spare
+
+    # explicit overrides win
+    max_children="${PHPFPM_MAX_CHILDREN:-$max_children}"
+    start="${PHPFPM_START_SERVERS:-$start}"
+    min_spare="${PHPFPM_MIN_SPARE_SERVERS:-$min_spare}"
+    max_spare="${PHPFPM_MAX_SPARE_SERVERS:-$max_spare}"
+
+    php_full="$(php -r 'echo PHP_VERSION;')"
+    php_mm="${php_full%.*}"
+
+    # PHPFPM_LISTEN: port (default, :9000) | socket (/run/php/php-fpm-X.Y/www.sock, used by `opencli php-listen socket`) | any port or socket path
+    listen_mode=0660
+    case "${PHPFPM_LISTEN:-port}" in
+        port|"") listen=9000 ;;
+        socket)  listen="/run/php/php-fpm-${php_mm}/www.sock" ;;
+        *)       listen="$PHPFPM_LISTEN" ;;
+    esac
+    case "$listen" in
+        /*) mkdir -p "$(dirname "$listen")"; rm -f "$listen"; listen_mode=0666 ;;  # webserver containers connect as their own user
+    esac
+
+    cat > /usr/local/etc/php-fpm.d/zz-runtime.conf <<EOF
+; written by openpanel-entrypoint at container start (${ram_mb}MB, ${worker_mb}MB per worker)
+[www]
+user = ${user}
+group = ${group}
+listen = ${listen}
+listen.owner = ${user}
+listen.group = ${group}
+listen.mode = ${listen_mode}
+pm = ${PHPFPM_PM:-dynamic}
+pm.max_children = ${max_children}
+pm.start_servers = ${start}
+pm.min_spare_servers = ${min_spare}
+pm.max_spare_servers = ${max_spare}
+pm.max_requests = ${PHPFPM_MAX_REQUESTS:-500}
+EOF
+    echo "[openpanel] PHP ${php_full} | ${ram_mb}MB | user ${user} | listen ${listen} | max_children=${max_children} start=${start} spare=${min_spare}-${max_spare}" >&2
+
+    # running workers as root needs -R, add it when the compose command doesn't
+    if [ "$user" = root ]; then
+        case " $* " in
+            *" -R "*|*" --allow-to-run-as-root "*) ;;
+            *) set -- "$@" --allow-to-run-as-root ;;
+        esac
+    fi
+fi
+
+exec "$@"

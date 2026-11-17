@@ -1,0 +1,14 @@
+# PHP version   base image tag (php:<tag>)   fallback tag (used if base doesn't exist yet, e.g. before a GA release)   composer
+5.6   5.6-fpm-stretch    -                    2.2
+7.0   7.0-fpm-stretch    -                    2.2
+7.1   7.1-fpm-buster     -                    2.2
+7.2   7.2-fpm-buster     -                    2
+7.3   7.3-fpm-bullseye   -                    2
+7.4   7.4-fpm-bullseye   -                    2
+8.0   8.0-fpm-bullseye   -                    2
+8.1   8.1-fpm-trixie     -                    2
+8.2   8.2-fpm-trixie     -                    2
+8.3   8.3-fpm-trixie     -                    2
+8.4   8.4-fpm-trixie     -                    2
+8.5   8.5-fpm-trixie     -                    2
+8.6   8.6-fpm-trixie     8.6-rc-fpm-trixie    2

@@ -1,0 +1,12 @@
+#!/bin/sh
+# Disable PHP extensions: phpdelmod <ext> [ext...]  (renames conf.d/*<ext>.ini to .ini.disabled, re-enable with phpaddmod)
+[ $# -eq 0 ] && { echo "Usage: ${0##*/} <extension> [extension...]" >&2; exit 1; }
+rc=0
+for m; do
+    found=0
+    for f in "$PHP_INI_DIR"/conf.d/docker-php-ext-"$m".ini; do
+        [ -e "$f" ] && mv "$f" "$f.disabled" && found=1 && echo "Disabled $m"
+    done
+    [ $found -eq 0 ] && { echo "Extension $m is not enabled" >&2; rc=1; }
+done
+exit $rc

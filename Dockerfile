@@ -1,85 +1,59 @@
-ARG PHP_VERSION=8.4
-FROM php:${PHP_VERSION}-fpm-bookworm AS builder
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpng-dev \
-        libjpeg62-turbo-dev \
-        libwebp-dev \
-        libfreetype6-dev \
-        libicu-dev \
-        libtidy-dev \
-        libyaml-dev \
-        libzip-dev \
-        libpq-dev \
-        libsodium-dev \
-        unzip \
-        git \
-    && docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
-        --with-webp \
-    && docker-php-ext-install -j$(nproc) \
-        bcmath \
-        calendar \
-        exif \
-        gd \
-        gettext \
-        intl \
-        mysqli \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        sodium \
-        tidy \
-        zip \
-    && pecl install \
-        igbinary \
-        msgpack \
-        apcu \
-        yaml \
-        uuid \
-    && pecl install \
-        --configureoptions 'enable-redis-igbinary="yes" enable-redis-msgpack="yes"' \
-        redis \
-    && docker-php-ext-enable \
-        igbinary \
-        msgpack \
-        apcu \
-        redis \
-        yaml \
-        uuid \
-    && rm -rf /var/lib/apt/lists/* /tmp/pear
-FROM debian:bookworm-slim AS final
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpng16-16 \
-        libjpeg62-turbo \
-        libwebp7 \
-        libfreetype6 \
-        libicu72 \
-        libtidy5deb1 \
-        libyaml-0-2 \
-        libzip4 \
-        libpq5 \
-        libgomp1 \
-        libsodium23 \
-        libreadline8 \
-        libsqlite3-0 \
-        libcurl4 \
-        libonig5 \
-        libargon2-1 \
-        ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /usr/local/bin/php /usr/local/bin/php
-COPY --from=builder /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
-COPY --from=builder /usr/local/lib/php/ /usr/local/lib/php/
-COPY --from=builder /usr/local/etc/php/ /usr/local/etc/php/
-COPY --from=builder /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf
-COPY --from=builder /usr/local/etc/php-fpm.d/ /usr/local/etc/php-fpm.d/
-COPY --from=builder /usr/local/bin/docker-php-* /usr/local/bin/
-COPY www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY php-fpm.conf /usr/local/etc/php-fpm.conf
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# syntax=docker/dockerfile:1
+# openpanel/php-fpm - slim Debian php-fpm images for OpenPanel
+# https://github.com/stefanpejcic/php-fpm
+
+ARG BASE_TAG=8.5-fpm-trixie
+ARG COMPOSER_VERSION=2
+
+FROM composer/composer:${COMPOSER_VERSION}-bin AS composer
+FROM mlocati/php-extension-installer:2 AS ipe
+
+# ---- build: official php image + extensions, then the compiler toolchain is removed ----
+FROM php:${BASE_TAG} AS build
+COPY --from=ipe /usr/bin/install-php-extensions /usr/local/bin/install-php-extensions
+COPY --from=composer /composer /usr/local/bin/composer
+COPY build/setup.sh /tmp/setup.sh
+RUN sh /tmp/setup.sh && rm -f /tmp/setup.sh
+# scripts last, so changing them doesn't rebuild the extensions
+COPY rootfs/ /
+
+# ---- final: one flat layer, no gcc/perl/headers left behind ----
+FROM scratch
+
+ARG PHP_VERSION=8.5
+ARG BASE_TAG
+ARG VCS_REF=unknown
+ARG BUILD_DATE=unknown
+
+COPY --from=build / /
+
+LABEL org.opencontainers.image.title="openpanel/php-fpm:${PHP_VERSION}" \
+      org.opencontainers.image.description="Slim Debian PHP-FPM ${PHP_VERSION} image for OpenPanel" \
+      org.opencontainers.image.authors="Stefan Pejcic <stefan@pejcic.rs>" \
+      org.opencontainers.image.vendor="OpenPanel" \
+      org.opencontainers.image.url="https://github.com/stefanpejcic/php-fpm" \
+      org.opencontainers.image.source="https://github.com/stefanpejcic/php-fpm" \
+      org.opencontainers.image.documentation="https://github.com/stefanpejcic/php-fpm#readme" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.base.name="docker.io/library/php:${BASE_TAG}" \
+      maintainer="Stefan Pejcic <stefan@pejcic.rs>"
+
+# same environment the official php images set (lost by FROM scratch)
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    PHP_VERSION=${PHP_VERSION} \
+    PHP_INI_DIR=/usr/local/etc/php \
+    PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c" \
+    PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" \
+    PHP_CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" \
+    PHP_LDFLAGS="-Wl,-O1 -pie" \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_HOME=/.composer
+
 WORKDIR /var/www/html
-ENTRYPOINT ["/docker-entrypoint.sh"]
+STOPSIGNAL SIGQUIT
+EXPOSE 9000
+
+ENTRYPOINT ["openpanel-entrypoint"]
+CMD ["php-fpm"]
