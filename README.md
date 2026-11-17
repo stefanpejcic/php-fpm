@@ -16,6 +16,19 @@ They are drop-in replacements for the `shinsenter/php:X.Y-fpm` images OpenPanel 
 | ready in | seconds | ~100 ms |
 | extra stuff | cron, msmtp, htop, s6, helper scripts | only `procps`, `less`, `unzip` |
 
+## Status
+
+Updated by every build: PHP and Debian version, PHP upstream support, compressed download size, when the tag was pushed, how long the build took, and a [Trivy](https://trivy.dev) scan of the published image (amd64).
+
+- **Vulns C / H / M / L**: critical / high / medium / low findings in the image's Debian packages.
+- **Fixable C/H**: critical/high ones that already have a fix in Debian, the only ones that need action (normally the next nightly build picks them up). EOL Debian releases (5.6-8.0) never get fixes, so their totals only grow.
+- PHP itself is compiled from source and isn't a Debian package, so PHP CVEs are not counted here - that's what the **PHP support** column is for.
+- Full findings: *Security → Code scanning* (high/critical with a fix available) and each run's summary.
+
+<!-- status:start -->
+_Filled in by the first workflow run._
+<!-- status:end -->
+
 ## What's inside
 
 - Base: official `php:X.Y-fpm-<debian>` image (stretch for 5.6/7.0, buster 7.1/7.2, bullseye 7.3–8.0, trixie 8.1+). EOL Debian releases are pointed at `archive.debian.org` so `apt` still works.

@@ -21,6 +21,10 @@ concurrency:
 
 env:
   IMAGE: openpanel/php-fpm
+  TRIVY_IMAGE: aquasec/trivy:0.76.1
+
+permissions:
+  contents: read
 
 jobs:
   matrix:
@@ -70,6 +74,7 @@ jobs:
 
       - name: Build and test
         run: |
+          start=$(date +%s)
           printf '%s\n' \
             --build-arg PHP_VERSION=${{ matrix.version }} \
             --build-arg BASE_TAG=${{ matrix.base }} \
@@ -78,20 +83,20 @@ jobs:
             --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) > build.args
           docker buildx build --pull --load $(cat build.args) -t test:${{ matrix.version }} .
           FULL=1 ./test.sh test:${{ matrix.version }}
+          mkdir -p digests && echo $(( $(date +%s) - start )) > digests/${{ matrix.arch }}.seconds
 
       - name: Push by digest (same build, from cache)
         run: |
           docker buildx build $(cat build.args) \
             --output type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true \
             --metadata-file meta.json .
-          mkdir -p digests
           jq -r '."containerimage.digest"' meta.json > digests/${{ matrix.arch }}
           cat digests/${{ matrix.arch }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: digest-${{ matrix.version }}-${{ matrix.arch }}
-          path: digests/${{ matrix.arch }}
+          path: digests/
           retention-days: 1
 
   publish:
@@ -121,3 +126,91 @@ jobs:
           docker buildx imagetools create -t ${IMAGE}:${{ matrix.version }} \
             ${IMAGE}@$(cat digests/amd64) ${IMAGE}@$(cat digests/arm64)
           docker buildx imagetools inspect ${IMAGE}:${{ matrix.version }}
+
+  # Trivy scan of what is published on Docker Hub (amd64 - the packages are the same on arm64).
+  # Report only, never blocks: EOL Debian/PHP versions always have unfixable CVEs.
+  scan:
+    needs: [matrix, publish]
+    if: always() && needs.matrix.result == 'success'
+    name: scan ${{ matrix.version }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.matrix.outputs.versions) }}
+    env:
+      REF: openpanel/php-fpm:${{ matrix.version }}
+    steps:
+      - name: Image info
+        run: |
+          docker pull -q --platform linux/amd64 $REF
+          php=$(docker run --rm --entrypoint php $REF -r 'echo PHP_VERSION;')
+          debian=$(docker run --rm --entrypoint sh $REF -c '. /etc/os-release; echo "$VERSION_ID ($VERSION_CODENAME)"')
+          mods=$(docker run --rm --entrypoint php $REF -m | tr '[:upper:]' '[:lower:]')
+          missing=()
+          for e in apcu bcmath calendar exif ftp gd gettext igbinary intl msgpack mysqli "zend opcache" pcntl pdo_mysql pdo_pgsql pgsql redis sodium tidy uuid yaml zip; do
+            [ "$e" = sodium ] && grep -qxE "sodium|libsodium" <<<"$mods" && continue
+            grep -qx "$e" <<<"$mods" || missing+=("${e#zend }")
+          done
+          mkdir -p out
+          jq -n --arg php "$php" --arg debian "$debian" --args '{php: $php, debian: $debian, missing_extensions: $ARGS.positional}' "${missing[@]}" > out/info.json
+          cat out/info.json
+
+      - name: Trivy scan
+        run: |
+          mkdir -p ~/.cache/trivy
+          trivy() { docker run --rm -v ~/.cache/trivy:/root/.cache/trivy -v "$PWD/out:/out" $TRIVY_IMAGE "$@"; }
+          trivy image --quiet --scanners vuln --platform linux/amd64 --format json -o /out/trivy.json $REF
+          trivy convert --format sarif --severity HIGH,CRITICAL --ignore-unfixed -o /out/trivy.sarif /out/trivy.json
+          jq '[.Results[]?.Vulnerabilities[]? | {id: .VulnerabilityID, sev: .Severity, fix: ((.FixedVersion // "") != "")}] | unique_by(.id) as $v
+              | def count(f): reduce ("CRITICAL","HIGH","MEDIUM","LOW") as $s ({}; .[$s] = ([$v[] | select(.sev == $s) | select(f)] | length));
+              {vulns: count(true), fixable: count(.fix), scanned: (now | todate)}' out/trivy.json > out/vulns.json
+          jq -s 'add' out/info.json out/vulns.json > out/scan.json
+          cat out/scan.json
+          {
+            echo "### $REF"
+            echo "PHP $(jq -r .php out/scan.json), Debian $(jq -r .debian out/scan.json)"
+            echo "- vulnerabilities C/H/M/L: $(jq -r '.vulns | "\(.CRITICAL) / \(.HIGH) / \(.MEDIUM) / \(.LOW)"' out/scan.json)"
+            echo "- with a fix available (critical/high): $(jq -r '.fixable | "\(.CRITICAL) / \(.HIGH)"' out/scan.json)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: github/codeql-action/upload-sarif@v3
+        continue-on-error: true
+        with:
+          sarif_file: out/trivy.sarif
+          category: php-${{ matrix.version }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan-${{ matrix.version }}
+          path: out/scan.json
+          retention-days: 1
+
+  # Writes the status table in README.md (data kept in status.json, so partial runs keep the other rows)
+  report:
+    needs: [matrix, scan]
+    if: always() && needs.matrix.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Update README status table
+        run: |
+          python3 build/report.py artifacts
+          git diff --stat
+      - name: Commit
+        run: |
+          git diff --quiet -- README.md status.json && { echo "no changes"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md status.json
+          git commit -m "Update image status table [skip ci]"
+          for i in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep 5; done
+          exit 1
