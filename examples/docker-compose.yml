@@ -1,4 +1,4 @@
-# Example: PHP-FPM 8.4 behind nginx. `docker compose up -d`, then open http://localhost:8080
+# Example: PHP-FPM 8.4 behind nginx. In this folder: `docker compose up -d`, then open http://localhost:8080
 services:
   php:
     image: openpanel/php-fpm:8.4

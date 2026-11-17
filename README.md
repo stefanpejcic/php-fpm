@@ -73,7 +73,7 @@ Point your webserver's FastCGI to `php:9000` (see [webserver examples](#webserve
 
 ### Docker Compose
 
-A complete PHP-FPM + nginx example is in [`docker-compose.yml`](docker-compose.yml) and [`nginx.conf`](nginx.conf): `docker compose up -d`, then open http://localhost:8080.
+A complete PHP-FPM + nginx example is in [`examples/`](examples/) ([`docker-compose.yml`](examples/docker-compose.yml), [`nginx.conf`](examples/nginx.conf)): `cd examples && docker compose up -d`, then open http://localhost:8080.
 
 ```yaml
 services:
