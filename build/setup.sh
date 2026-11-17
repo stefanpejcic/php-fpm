@@ -39,7 +39,7 @@ fi
 apt-get install -y -q --no-install-recommends procps less unzip ca-certificates curl xz-utils
 
 # ---------------------------------------------------------------------------
-# 3. Extensions - the same set the shinsenter/php images shipped
+# 3. Extensions included by default
 # ---------------------------------------------------------------------------
 # AVIF needs libaom/libavif built from source on old Debian releases, skip it there
 case "$CODENAME" in jessie|stretch|buster|bullseye) export IPE_GD_WITHOUTAVIF=1 ;; esac

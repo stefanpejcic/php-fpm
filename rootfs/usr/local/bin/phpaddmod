@@ -1,6 +1,6 @@
 #!/bin/sh
 # Install and enable PHP extensions: phpaddmod <ext> [ext...]
-# Same command name/behaviour OpenPanel used with shinsenter/php, backed by install-php-extensions.
+# Backed by install-php-extensions (https://github.com/mlocati/docker-php-extension-installer).
 [ $# -eq 0 ] && { echo "Usage: ${0##*/} <extension> [extension...]   e.g. ${0##*/} imagick soap" >&2; exit 1; }
 
 # re-enable extensions disabled with *.ini.disabled or commented out

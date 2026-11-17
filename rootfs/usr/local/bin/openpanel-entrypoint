@@ -7,7 +7,7 @@ set -e
 [ "${1#-}" != "$1" ] && set -- php-fpm "$@"
 
 if [ "$1" = php-fpm ] || [ "$1" = /usr/local/sbin/php-fpm ]; then
-    user="${APP_USER:-www-data}"
+    user="${APP_USER:-root}"   # OpenPanel runs PHP as root (= the account user on the host with rootless podman), set APP_USER=www-data for an unprivileged pool
     group="${APP_GROUP:-$user}"
 
     # size the pool from this container's cgroup memory limit (host RAM when unlimited)

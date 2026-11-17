@@ -1,6 +1,6 @@
 #!/bin/bash
 # Smoke test an image: ./test.sh openpanel/php-fpm:8.4
-# Starts it like OpenPanel does (APP_USER=root, memory limit) and checks fpm, extensions, phpaddmod, composer.
+# Starts it with defaults (root pool, memory limit) and checks fpm, extensions, phpaddmod, composer.
 set -euo pipefail
 IMG="${1:?usage: $0 <image>}"
 RT="${RT:-$(command -v docker || command -v podman)}"
@@ -9,7 +9,7 @@ trap '$RT rm -f "$NAME" "$NAME-sock" >/dev/null 2>&1 || true' EXIT
 
 fail() { echo "FAIL: $*" >&2; $RT logs "$NAME" 2>&1 | tail -20 >&2; exit 1; }
 
-$RT run -d --name "$NAME" -m 512m -e APP_USER=root -e APP_GROUP=root "$IMG" php-fpm --allow-to-run-as-root >/dev/null
+$RT run -d --name "$NAME" -m 512m "$IMG" >/dev/null
 for i in $(seq 1 50); do
     $RT exec "$NAME" sh -c "awk '\$4 == \"0A\"' /proc/net/tcp /proc/net/tcp6 2>/dev/null | grep -q ." 2>/dev/null && break
     sleep 0.1
@@ -31,7 +31,10 @@ $RT exec "$NAME" sh -c 'for d in /proc/[0-9]*; do case "$(tr "\0" " " < $d/cmdli
 echo "ok   USR2 reload"
 $RT exec "$NAME" phpaddmod calendar | grep -q "already installed" && echo "ok   phpaddmod (skip installed)"
 # socket mode, as `opencli php-listen socket` sets it
-$RT run -d --name "$NAME-sock" -e APP_USER=root -e PHPFPM_LISTEN=socket "$IMG" >/dev/null
+$RT run -d --name "$NAME-sock" -e PHPFPM_LISTEN=socket "$IMG" >/dev/null
+# explicit user and flag on the command line must keep working too
+$RT run --rm -e APP_USER=root -e APP_GROUP=root -e APP_UID=1003 -e APP_GID=1003 "$IMG" php-fpm --allow-to-run-as-root -t >/dev/null 2>&1 || fail "explicit APP_USER + --allow-to-run-as-root"
+echo "ok   explicit APP_USER + --allow-to-run-as-root"
 ok=0
 for i in $(seq 1 50); do
     $RT exec "$NAME-sock" sh -c "awk '\$8 ~ /^\/run\/php\/php-fpm-[0-9.]+\/www.sock/' /proc/net/unix | grep -q ." 2>/dev/null && { ok=1; break; }

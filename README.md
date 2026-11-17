@@ -1,20 +1,18 @@
 # openpanel/php-fpm
 
-Slim Debian PHP-FPM images for [OpenPanel](https://openpanel.com), one tag per PHP version, for **amd64 and arm64**:
+Slim, fast-starting Debian PHP-FPM images, one tag per PHP version, for **amd64 and arm64**:
 
 ```
 openpanel/php-fpm:5.6  7.0  7.1  7.2  7.3  7.4  8.0  8.1  8.2  8.3  8.4  8.5  8.6
 ```
 
-They are drop-in replacements for the `shinsenter/php:X.Y-fpm` images OpenPanel used before: change only the `image:` line, everything else in the compose file keeps working (php.ini mounts, ionCube loader, wp-cli, `phpaddmod` extension installs, `APP_USER=root`, `php-fpm --allow-to-run-as-root`).
+Used by [OpenPanel](https://openpanel.com) for every user's PHP, and usable standalone with any Docker or Podman setup.
 
-## Why
-
-| | shinsenter/php | openpanel/php-fpm |
-|---|---|---|
-| start | s6 + bootstrap hooks, ownership check/`chown`, crontab, usermod | one shell script writes the pool file and `exec php-fpm` |
-| ready in | seconds | ~100 ms |
-| extra stuff | cron, msmtp, htop, s6, helper scripts | only `procps`, `less`, `unzip` |
+- **Fast start**: one small shell script writes the pool config and `exec`s php-fpm, ready in a few hundred ms. No init system, cron, `chown` or hooks at start.
+- **Small**: built on the official `php` images, compiler toolchain removed, one flat layer (~70-90 MB download).
+- **Sized from the container**: the FPM pool follows the container's memory limit.
+- **Common extensions included**, more with one command (`phpaddmod imagick`).
+- **Rebuilt every night** with the latest PHP patch release and Debian security updates.
 
 ## Status
 
@@ -32,7 +30,7 @@ _Filled in by the first workflow run._
 ## What's inside
 
 - Base: official `php:X.Y-fpm-<debian>` image (stretch for 5.6/7.0, buster 7.1/7.2, bullseye 7.3–8.0, trixie 8.1+). EOL Debian releases are pointed at `archive.debian.org` so `apt` still works.
-- Extensions (same set as before): apcu bcmath calendar exif ftp gd gettext igbinary intl msgpack mysqli opcache pcntl pdo_mysql pdo_pgsql pgsql redis sodium tidy uuid yaml zip. Brand-new versions (RC) get the PECL ones as soon as they support it - the nightly build picks them up.
+- Extensions: apcu bcmath calendar exif ftp gd gettext igbinary intl msgpack mysqli opcache pcntl pdo_mysql pdo_pgsql pgsql redis sodium tidy uuid yaml zip. Brand-new versions (RC) get the PECL ones as soon as they support it - the nightly build picks them up.
 - `composer` (2.2 LTS on PHP < 7.2), `install-php-extensions`, `phpaddmod` / `phpdelmod`.
 - PHP-FPM listens on `9000`, logs to stderr, no access log (the webserver logs requests), `/ping` → `pong`.
 
@@ -40,12 +38,10 @@ _Filled in by the first workflow run._
 
 `openpanel-entrypoint` only:
 
-1. sizes the pool from the container memory limit (`(RAM - 64MB) / 64MB` children, cap 256, same formula as OpenPanel's `fpm-tuning.sh`),
-2. sets the pool user from `APP_USER` / `APP_GROUP` (default `www-data`) and the listen address (`PHPFPM_LISTEN`),
+1. sizes the pool from the container memory limit (`(RAM - 64MB) / 64MB` children, cap 256),
+2. sets the pool user from `APP_USER` / `APP_GROUP` (default `root`) and the listen address (`PHPFPM_LISTEN`),
 3. adds `--allow-to-run-as-root` when the user is root,
 4. `exec php-fpm`.
-
-`APP_UID`/`APP_GID` and the `/etc/hooks/...` mount from the old compose file are simply ignored.
 
 ## PHP-FPM config
 
@@ -59,7 +55,7 @@ Files in `/usr/local/etc/php-fpm.d/` are read alphabetically, later ones overrid
 
 ### Pool size follows the container memory limit
 
-At start the entrypoint reads `/sys/fs/cgroup/memory.max` (the compose `memory` limit, `PHP_FPM_X_Y_RAM` in OpenPanel), or host RAM when the container is unlimited:
+At start the entrypoint reads `/sys/fs/cgroup/memory.max` (`docker run -m`, or the compose `memory` limit), or host RAM when the container is unlimited:
 
 ```
 max_children = (RAM - 64MB) / 64MB   (min 2, max 256)
@@ -76,11 +72,11 @@ max_spare    = max_children / 2
 
 The result is printed in the container log, e.g. `[openpanel] PHP 8.5.12 | 1024MB | user root | listen 9000 | max_children=15 start=3 spare=1-7`.
 
-- Only RAM counts, not CPU (same as OpenPanel's old `fpm-tuning.sh`).
-- It's calculated on start only: changing a user's RAM recreates the container, so it recalculates. A USR2 reload (after php.ini changes) keeps the values.
+- Only RAM counts, not CPU.
+- It's calculated on start only: changing the memory limit means recreating the container, so it recalculates. A USR2 reload (after php.ini changes) keeps the values.
 - `php.ini` is separate: `memory_limit` etc. come from the mounted ini. The formula assumes 64MB per worker on average, so if every worker hits a 512M `memory_limit` at once the kernel kills a worker (OOM), not the container. Raise `PHPFPM_WORKER_MB` for a more conservative pool.
 
-### Overrides (compose `environment:`)
+### Overrides (environment variables)
 
 | Variable | Default | |
 |---|---|---|
@@ -90,28 +86,39 @@ The result is printed in the container log, e.g. `[openpanel] PHP 8.5.12 | 1024M
 | `PHPFPM_MAX_CHILDREN`, `PHPFPM_START_SERVERS`, `PHPFPM_MIN_SPARE_SERVERS`, `PHPFPM_MAX_SPARE_SERVERS` | calculated | fixed values, skip the formula |
 | `PHPFPM_MAX_REQUESTS` | 500 | worker is recycled after this many requests |
 | `PHPFPM_PM` | dynamic | `dynamic`, `static` or `ondemand` |
-| `PHPFPM_LISTEN` | port | `port` (:9000), `socket` (`/run/php/php-fpm-X.Y/www.sock`, set by `opencli php-listen socket`), or any port / socket path |
-| `APP_USER` / `APP_GROUP` | www-data | user the workers run as (OpenPanel uses root) |
+| `PHPFPM_LISTEN` | port | `port` (:9000), `socket` (`/run/php/php-fpm-X.Y/www.sock`, used by OpenPanel's `opencli php-listen socket`), or any port / socket path |
+| `APP_USER` / `APP_GROUP` | root | user the workers run as; `--allow-to-run-as-root` is added automatically for root. Set `www-data` for an unprivileged pool |
 
 ## Usage
 
+```bash
+docker run -d --name php -m 512m -v ./site:/var/www/html -p 9000:9000 openpanel/php-fpm:8.4
+```
+
+Point your webserver's FastCGI at `php:9000` (or use `PHPFPM_LISTEN=socket` and share `/run/php`). With compose:
+
 ```yaml
+services:
   php-fpm-8.4:
     image: openpanel/php-fpm:8.4
     volumes:
-      - html_data:/var/www/html/
-      - ./php.ini/8.4.ini:/usr/local/etc/php/php.ini
-      - /etc/openpanel/wordpress/wp-cli.phar:/usr/local/bin/wp:ro
-      - /etc/openpanel/php/ioncube/ioncube_loader_lin_8.4.so:/usr/local/lib/php/extensions/ioncube_loader.so:ro
-      - /etc/openpanel/php/ioncube_extension.ini:/usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini:ro
-    environment:
-      - APP_USER=root
-      - APP_GROUP=root
-    command: php-fpm --allow-to-run-as-root
+      - ./site:/var/www/html
+      - ./php.ini:/usr/local/etc/php/php.ini:ro    # optional, your own php.ini
+    deploy:
+      resources:
+        limits:
+          memory: 1G                               # pool size follows this
 ```
 
-Install an extension in a running container: `docker exec php-fpm-8.4 phpaddmod imagick soap`
-Disable one: `docker exec php-fpm-8.4 phpdelmod imagick`
+Workers run as root by default (`--allow-to-run-as-root` is added automatically). Set `APP_USER=www-data` for an unprivileged pool.
+
+- **php.ini**: mount it at `/usr/local/etc/php/php.ini`, extra snippets go in `/usr/local/etc/php/conf.d/`.
+- **ionCube**: mount the loader for your PHP version and enable it:
+  `-v ./ioncube_loader_lin_8.4.so:/usr/local/lib/php/extensions/ioncube_loader.so:ro`
+  `-v ./ioncube.ini:/usr/local/etc/php/conf.d/docker-php-ext-ioncube.ini:ro` with `zend_extension=/usr/local/lib/php/extensions/ioncube_loader.so`
+- **wp-cli**: mount `wp-cli.phar` at `/usr/local/bin/wp`.
+- **Extensions**: `docker exec php phpaddmod imagick soap` installs (compiles if needed) and enables them; `phpdelmod imagick` disables one. Restart the container or reload php-fpm (`kill -USR2 1`) to apply.
+- **Health check**: FastCGI `/ping` answers `pong`.
 
 ## Building
 
