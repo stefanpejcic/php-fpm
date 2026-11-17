@@ -214,3 +214,15 @@ jobs:
           git commit -m "Update image status table [skip ci]"
           for i in 1 2 3; do git pull --rebase -q && git push -q && exit 0; sleep 5; done
           exit 1
+
+      - name: Sync README to Docker Hub
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: openpanel/php-fpm
+          short-description: "Slim, fast-starting Debian PHP-FPM images, PHP 5.6 to 8.6, amd64 + arm64, rebuilt nightly"
+          readme-filepath: ./README.md
+          enable-url-completion: true
