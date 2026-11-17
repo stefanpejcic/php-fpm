@@ -93,21 +93,23 @@ jobs:
           FULL=1 ./test.sh test:${{ matrix.version }} 2>&1 | tee test.log
           mkdir -p digests && echo $(( $(date +%s) - start )) > digests/${{ matrix.arch }}.seconds
 
+      - name: Push by digest (same build, from cache)
+        shell: bash
+        run: |
+          set -eo pipefail
+          docker buildx build $(cat build.args) \
+            --output type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true \
+            --metadata-file meta.json . 2>&1 | tee push.log
+          jq -r '."containerimage.digest"' meta.json > digests/${{ matrix.arch }}
+          cat digests/${{ matrix.arch }}
+
       - name: Show failure as annotation
         if: failure()
         shell: bash
         run: |
-          f=test.log; [ -s test.log ] || f=build.log
+          f=push.log; [ -s push.log ] || f=test.log; [ -s "$f" ] || f=build.log
           msg=$(tail -40 "$f" 2>/dev/null | sed -e ':a;N;$!ba' -e 's/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
           echo "::error title=${{ matrix.version }} ${{ matrix.arch }} failed ($f)::$msg"
-
-      - name: Push by digest (same build, from cache)
-        run: |
-          docker buildx build $(cat build.args) \
-            --output type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true \
-            --metadata-file meta.json .
-          jq -r '."containerimage.digest"' meta.json > digests/${{ matrix.arch }}
-          cat digests/${{ matrix.arch }}
 
       - uses: actions/upload-artifact@v4
         with:
