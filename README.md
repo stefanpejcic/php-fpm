@@ -221,7 +221,7 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 | `openpanel/php-fpm:8.5` | - | - | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-17 20:31 | 3m19s / 3m33s | - | - | - |
 | `openpanel/php-fpm:8.6` | - | - | 🧪 pre-release | 92 MB / 90 MB | 2026-11-17 20:31 | 2m37s / 3m44s | - | - | - |
 
-_Updated automatically by the build workflow, last run 2026-11-17 20:32 UTC._
+_Updated automatically by the build workflow, last run 2026-11-17 20:46 UTC._
 <!-- status:end -->
 
 ## FAQ
