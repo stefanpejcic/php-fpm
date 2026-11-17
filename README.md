@@ -32,11 +32,53 @@ They are drop-in replacements for the `shinsenter/php:X.Y-fpm` images OpenPanel 
 3. adds `--allow-to-run-as-root` when the user is root,
 4. `exec php-fpm`.
 
-`PHPFPM_LISTEN=socket` (set by `opencli php-listen socket`) makes it listen on `/run/php/php-fpm-X.Y/www.sock` instead of port 9000.
-
-Tunable with env vars: `PHPFPM_WORKER_MB`, `PHPFPM_RESERVE_MB`, `PHPFPM_MAX_CHILDREN_CAP`, `PHPFPM_MAX_CHILDREN`, `PHPFPM_START_SERVERS`, `PHPFPM_MIN_SPARE_SERVERS`, `PHPFPM_MAX_SPARE_SERVERS`, `PHPFPM_MAX_REQUESTS`, `PHPFPM_PM`.
-
 `APP_UID`/`APP_GID` and the `/etc/hooks/...` mount from the old compose file are simply ignored.
+
+## PHP-FPM config
+
+Files in `/usr/local/etc/php-fpm.d/` are read alphabetically, later ones override earlier ones:
+
+| File | Written | Contains |
+|---|---|---|
+| `www.conf`, `docker.conf`, `zz-docker.conf` | official php image | base `www` pool (access log removed) |
+| `zz-openpanel.conf` | at build, same everywhere | listen 9000, `clear_env = no`, logs to stderr, `/ping`, `pm = dynamic`, `pm.max_requests = 500`, `pm.process_idle_timeout = 10s` |
+| `zz-runtime.conf` | **at every container start** | pool `user`/`group`, `listen`, and `pm.*` sized from the container's resources |
+
+### Pool size follows the container memory limit
+
+At start the entrypoint reads `/sys/fs/cgroup/memory.max` (the compose `memory` limit, `PHP_FPM_X_Y_RAM` in OpenPanel), or host RAM when the container is unlimited:
+
+```
+max_children = (RAM - 64MB) / 64MB   (min 2, max 256)
+start        = max_children / 4      (min 2)
+min_spare    = max_children / 8      (min 1)
+max_spare    = max_children / 2
+```
+
+| Container RAM | max_children | start | spare |
+|---|---|---|---|
+| 0.5G | 7 | 2 | 1-3 |
+| 1G | 15 | 3 | 1-7 |
+| 2G | 31 | 7 | 3-15 |
+
+The result is printed in the container log, e.g. `[openpanel] PHP 8.5.12 | 1024MB | user root | listen 9000 | max_children=15 start=3 spare=1-7`.
+
+- Only RAM counts, not CPU (same as OpenPanel's old `fpm-tuning.sh`).
+- It's calculated on start only: changing a user's RAM recreates the container, so it recalculates. A USR2 reload (after php.ini changes) keeps the values.
+- `php.ini` is separate: `memory_limit` etc. come from the mounted ini. The formula assumes 64MB per worker on average, so if every worker hits a 512M `memory_limit` at once the kernel kills a worker (OOM), not the container. Raise `PHPFPM_WORKER_MB` for a more conservative pool.
+
+### Overrides (compose `environment:`)
+
+| Variable | Default | |
+|---|---|---|
+| `PHPFPM_WORKER_MB` | 64 | average RAM per worker in the formula |
+| `PHPFPM_RESERVE_MB` | 64 | RAM kept for the master process and opcache |
+| `PHPFPM_MAX_CHILDREN_CAP` | 256 | upper limit for max_children |
+| `PHPFPM_MAX_CHILDREN`, `PHPFPM_START_SERVERS`, `PHPFPM_MIN_SPARE_SERVERS`, `PHPFPM_MAX_SPARE_SERVERS` | calculated | fixed values, skip the formula |
+| `PHPFPM_MAX_REQUESTS` | 500 | worker is recycled after this many requests |
+| `PHPFPM_PM` | dynamic | `dynamic`, `static` or `ondemand` |
+| `PHPFPM_LISTEN` | port | `port` (:9000), `socket` (`/run/php/php-fpm-X.Y/www.sock`, set by `opencli php-listen socket`), or any port / socket path |
+| `APP_USER` / `APP_GROUP` | www-data | user the workers run as (OpenPanel uses root) |
 
 ## Usage
 
