@@ -43,6 +43,11 @@ done
 $RT rm -f "$NAME-sock" >/dev/null 2>&1
 [ $ok = 1 ] && echo "ok   socket mode (PHPFPM_LISTEN=socket)" || fail "socket mode"
 if [ "${FULL:-0}" = 1 ]; then
-    $RT exec "$NAME" phpaddmod soap >/dev/null && $RT exec "$NAME" php -m | grep -qx soap && echo "ok   phpaddmod soap" || fail "phpaddmod soap"
+    if $RT exec "$NAME" phpaddmod soap > /tmp/phpaddmod.$$ 2>&1 && $RT exec "$NAME" php -m | grep -qx soap; then
+        echo "ok   phpaddmod soap"
+    else
+        tail -30 /tmp/phpaddmod.$$ >&2; fail "phpaddmod soap"
+    fi
+    rm -f /tmp/phpaddmod.$$
 fi
 echo "PASS $IMG"
