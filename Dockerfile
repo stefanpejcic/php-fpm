@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # openpanel/php-fpm - slim Debian php-fpm images for OpenPanel
 # https://github.com/stefanpejcic/php-fpm
 

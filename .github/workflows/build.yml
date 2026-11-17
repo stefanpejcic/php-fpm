@@ -21,7 +21,8 @@ concurrency:
 
 env:
   IMAGE: openpanel/php-fpm
-  TRIVY_IMAGE: aquasec/trivy:0.76.1
+  # pulled through Google's Docker Hub mirror, Docker Hub rate-limits pulls (429) and is only used for pushing
+  TRIVY_IMAGE: mirror.gcr.io/aquasec/trivy:0.76.1
 
 permissions:
   contents: read
@@ -67,6 +68,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
+        with:
+          # base images come from mirror.gcr.io (falls back to Docker Hub), avoids Docker Hub's pull rate limit
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -154,6 +160,10 @@ jobs:
     env:
       REF: openpanel/php-fpm:${{ matrix.version }}
     steps:
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Image info
         run: |
           docker pull -q --platform linux/amd64 $REF
@@ -175,8 +185,9 @@ jobs:
           set -eo pipefail
           exec > >(tee scan.log) 2>&1
           mkdir -p ~/.cache/trivy
-          trivy() { docker run --rm -v ~/.cache/trivy:/root/.cache/trivy -v "$PWD/out:/out" $TRIVY_IMAGE "$@"; }
-          trivy image --quiet --scanners vuln --platform linux/amd64 --format json -o /out/trivy.json $REF
+          # scans the copy pulled in "Image info" through the docker socket, no second pull from Docker Hub
+          trivy() { docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.cache/trivy:/root/.cache/trivy -v "$PWD/out:/out" $TRIVY_IMAGE "$@"; }
+          trivy image --quiet --scanners vuln --image-src docker --format json -o /out/trivy.json $REF
           trivy convert --format sarif --severity HIGH,CRITICAL --ignore-unfixed -o /out/trivy.sarif /out/trivy.json
           jq '[.Results[]?.Vulnerabilities[]? | {id: .VulnerabilityID, sev: .Severity, fix: ((.FixedVersion // "") != "")}] | unique_by(.id) as $v
               | def count(f): reduce ("CRITICAL","HIGH","MEDIUM","LOW") as $s ({}; .[$s] = ([$v[] | select(.sev == $s) | select(f)] | length));
