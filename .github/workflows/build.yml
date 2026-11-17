@@ -73,7 +73,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and test
+        shell: bash
         run: |
+          set -eo pipefail
           start=$(date +%s)
           printf '%s\n' \
             --build-arg PHP_VERSION=${{ matrix.version }} \
@@ -81,9 +83,17 @@ jobs:
             --build-arg COMPOSER_VERSION=${{ matrix.composer }} \
             --build-arg VCS_REF=${GITHUB_SHA::7} \
             --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) > build.args
-          docker buildx build --pull --load $(cat build.args) -t test:${{ matrix.version }} .
-          FULL=1 ./test.sh test:${{ matrix.version }}
+          docker buildx build --pull --load $(cat build.args) -t test:${{ matrix.version }} . 2>&1 | tee build.log
+          FULL=1 ./test.sh test:${{ matrix.version }} 2>&1 | tee test.log
           mkdir -p digests && echo $(( $(date +%s) - start )) > digests/${{ matrix.arch }}.seconds
+
+      - name: Show failure as annotation
+        if: failure()
+        shell: bash
+        run: |
+          f=test.log; [ -s test.log ] || f=build.log
+          msg=$(tail -40 "$f" 2>/dev/null | sed -e ':a;N;$!ba' -e 's/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+          echo "::error title=${{ matrix.version }} ${{ matrix.arch }} failed ($f)::$msg"
 
       - name: Push by digest (same build, from cache)
         run: |
@@ -160,7 +170,10 @@ jobs:
           cat out/info.json
 
       - name: Trivy scan
+        shell: bash
         run: |
+          set -eo pipefail
+          exec > >(tee scan.log) 2>&1
           mkdir -p ~/.cache/trivy
           trivy() { docker run --rm -v ~/.cache/trivy:/root/.cache/trivy -v "$PWD/out:/out" $TRIVY_IMAGE "$@"; }
           trivy image --quiet --scanners vuln --platform linux/amd64 --format json -o /out/trivy.json $REF
@@ -176,6 +189,13 @@ jobs:
             echo "- vulnerabilities C/H/M/L: $(jq -r '.vulns | "\(.CRITICAL) / \(.HIGH) / \(.MEDIUM) / \(.LOW)"' out/scan.json)"
             echo "- with a fix available (critical/high): $(jq -r '.fixable | "\(.CRITICAL) / \(.HIGH)"' out/scan.json)"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show failure as annotation
+        if: failure()
+        shell: bash
+        run: |
+          msg=$(tail -40 scan.log 2>/dev/null | sed -e ':a;N;$!ba' -e 's/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+          echo "::error title=scan ${{ matrix.version }} failed::$msg"
 
       - uses: github/codeql-action/upload-sarif@v3
         continue-on-error: true
