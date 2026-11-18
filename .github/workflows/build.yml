@@ -13,7 +13,7 @@ on:
         default: ""
   push:
     branches: [main]
-    paths: ["Dockerfile", "build/**", "rootfs/**", "versions.txt", ".github/workflows/build.yml"]
+    paths: ["Dockerfile", "build/**", "rootfs/**", "versions.txt", "test.sh", ".github/workflows/build.yml"]
 
 concurrency:
   group: build-${{ github.ref }}
@@ -194,7 +194,8 @@ jobs:
           # scans the copy pulled in "Image info" through the docker socket, no second pull from Docker Hub
           trivy() { docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/.cache/trivy:/root/.cache/trivy -v "$PWD/out:/out" $TRIVY_IMAGE "$@"; }
           trivy image --quiet --scanners vuln --image-src docker --format json -o /out/trivy.json $REF
-          trivy convert --format sarif --severity HIGH,CRITICAL --ignore-unfixed -o /out/trivy.sarif /out/trivy.json
+          # convert can't filter unfixed findings, so the SARIF comes from a second scan (cached DB, local image)
+          trivy image --quiet --scanners vuln --image-src docker --format sarif --severity HIGH,CRITICAL --ignore-unfixed -o /out/trivy.sarif $REF
           jq '[.Results[]?.Vulnerabilities[]? | {id: .VulnerabilityID, sev: .Severity, fix: ((.FixedVersion // "") != "")}] | unique_by(.id) as $v
               | def count(f): reduce ("CRITICAL","HIGH","MEDIUM","LOW") as $s ({}; .[$s] = ([$v[] | select(.sev == $s) | select(f)] | length));
               {vulns: count(true), fixable: count(.fix), scanned: (now | todate)}' out/trivy.json > out/vulns.json
