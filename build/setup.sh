@@ -25,18 +25,24 @@ use_archive() {
     printf 'Acquire::Check-Valid-Until "false";\nAcquire::AllowInsecureRepositories "true";\nAPT::Get::AllowUnauthenticated "true";\n' \
         > /etc/apt/apt.conf.d/99openpanel-archive
 }
+# archive.debian.org and deb.debian.org time out now and then, retry instead of failing the build (also used by phpaddmod later)
+printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80openpanel-retries
 case "$CODENAME" in
     jessie|stretch|buster|bullseye) use_archive ;;
 esac
-if ! apt-get update -q; then
+apt_update() { for i in 1 2 3; do apt-get update -q && return 0; sleep $((i * 15)); done; return 1; }
+if ! apt_update; then
     use_archive
-    apt-get update -q
+    apt_update
 fi
 
 # ---------------------------------------------------------------------------
 # 2. Tools OpenPanel runs inside the container (ps for install status, less for wp-cli, unzip for composer/wp)
 # ---------------------------------------------------------------------------
-apt-get install -y -q --no-install-recommends procps less unzip ca-certificates curl xz-utils
+for i in 1 2 3; do
+    apt-get install -y -q --no-install-recommends procps less unzip ca-certificates curl xz-utils && break
+    [ "$i" = 3 ] && exit 1; sleep $((i * 15)); apt_update || true
+done
 
 # ---------------------------------------------------------------------------
 # 3. Extensions included by default
@@ -51,8 +57,12 @@ loaded() {
 }
 
 REQUIRED="bcmath calendar exif ftp gd gettext intl mysqli opcache pcntl pdo_mysql pdo_pgsql pgsql tidy zip uuid"
-# pecl extensions - may not support a brand-new PHP (e.g. an RC) yet, those are skipped and land in the next nightly build
+# pecl extensions: required too, only a pre-release PHP (RC) may ship without the ones that don't support it yet
 OPTIONAL="igbinary msgpack apcu yaml redis"
+PRERELEASE=0; case "$(php -r 'echo PHP_VERSION;')" in *RC*|*alpha*|*beta*|*dev*) PRERELEASE=1 ;; esac
+
+# pecl.php.net and the apt mirrors time out now and then, retry each install
+ipe() { for i in 1 2 3; do install-php-extensions "$@" && return 0; echo "!!! install-php-extensions $* failed (attempt $i)"; sleep $((i * 20)); done; return 1; }
 loaded sodium || REQUIRED="$REQUIRED sodium"
 
 todo=""
@@ -64,10 +74,13 @@ for e in $OPTIONAL; do loaded "$e" || opt="$opt $e"; done
 # shellcheck disable=SC2086
 if ! install-php-extensions $todo $opt; then
     echo "!!! combined install failed, retrying one by one"
-    [ -n "$todo" ] && install-php-extensions $todo
+    [ -n "$todo" ] && ipe $todo
     for e in $opt; do
         loaded "$e" && continue
-        install-php-extensions "$e" || echo "!!! WARNING: $e could not be installed for PHP ${PHP_MM}, skipping"
+        if ! ipe "$e"; then
+            [ "$PRERELEASE" = 1 ] || { echo "!!! $e could not be installed for PHP ${PHP_MM}" >&2; exit 1; }
+            echo "!!! WARNING: $e doesn't build on pre-release PHP ${PHP_MM} yet, skipping"
+        fi
     done
 fi
 
@@ -128,6 +141,9 @@ php -m
 for e in $REQUIRED; do
     loaded "$e" || { echo "!!! $e is missing" >&2; exit 1; }
 done
+if [ "$PRERELEASE" = 0 ]; then
+    for e in $OPTIONAL; do loaded "$e" || { echo "!!! $e is missing" >&2; exit 1; }; done
+fi
 php-fpm -t -R
 composer --version --no-interaction 2>/dev/null | head -1
 echo "==> done: PHP ${PHP_MM}"

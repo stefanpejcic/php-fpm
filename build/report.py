@@ -97,7 +97,10 @@ def main(art):
             return "-", "-"
         total = f"{t['CRITICAL']} / {t['HIGH']} / {t['MEDIUM']} / {t['LOW']}"
         fc, fh = r["fixable"]["CRITICAL"], r["fixable"]["HIGH"]
-        fix = "✅ none" if fc + fh == 0 else f"⚠️ {fc} critical, {fh} high"
+        if r.get("debian_eol"):
+            fix = "⛔ Debian EOL, no updates"
+        else:
+            fix = "✅ none" if fc + fh == 0 else f"⚠️ {fc} critical, {fh} high"
         return total, fix
 
     lines = [

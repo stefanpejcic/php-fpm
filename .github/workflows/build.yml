@@ -174,7 +174,7 @@ jobs:
         run: |
           docker pull -q --platform linux/amd64 $REF
           php=$(docker run --rm --entrypoint php $REF -r 'echo PHP_VERSION;')
-          debian=$(docker run --rm --entrypoint sh $REF -c '. /etc/os-release; echo "$VERSION_ID ($VERSION_CODENAME)"')
+          debian=$(docker run --rm --entrypoint sh $REF -c '. /etc/os-release; echo "$VERSION"')
           mods=$(docker run --rm --entrypoint php $REF -m | tr '[:upper:]' '[:lower:]')
           missing=()
           for e in apcu bcmath calendar exif ftp gd gettext igbinary intl msgpack mysqli "zend opcache" pcntl pdo_mysql pdo_pgsql pgsql redis sodium tidy uuid yaml zip; do
@@ -198,7 +198,9 @@ jobs:
           trivy image --quiet --scanners vuln --image-src docker --format sarif --severity HIGH,CRITICAL --ignore-unfixed -o /out/trivy.sarif $REF
           jq '[.Results[]?.Vulnerabilities[]? | {id: .VulnerabilityID, sev: .Severity, fix: ((.FixedVersion // "") != "")}] | unique_by(.id) as $v
               | def count(f): reduce ("CRITICAL","HIGH","MEDIUM","LOW") as $s ({}; .[$s] = ([$v[] | select(.sev == $s) | select(f)] | length));
-              {vulns: count(true), fixable: count(.fix), scanned: (now | todate)}' out/trivy.json > out/vulns.json
+              {vulns: count(true), fixable: count(.fix), scanned: (now | todate)}' out/trivy.json > out/counts.json
+          # EOL Debian gets no more package updates, "fixable" there means fixed in a newer Debian only
+          jq -s '.[0] + {debian_eol: (.[1].Metadata.OS.EOSL // false)}' out/counts.json out/trivy.json > out/vulns.json
           jq -s 'add' out/info.json out/vulns.json > out/scan.json
           cat out/scan.json
           {
