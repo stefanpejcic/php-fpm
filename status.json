@@ -1,10 +1,11 @@
 {
   "5.6": {
     "build_seconds": {
-      "amd64": 114,
-      "arm64": 160
+      "amd64": 173,
+      "arm64": 146
     },
-    "debian": "9 ()",
+    "debian": "9 (stretch)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 13,
       "HIGH": 59,
@@ -15,11 +16,11 @@
     "php": "5.6.40",
     "php_eol": "2018-12-31",
     "php_support": "2017-01-19",
-    "pushed": "2026-11-18T07:55:54.700631Z",
-    "scanned": "2026-11-18T07:56:34Z",
+    "pushed": "2026-11-18T08:20:06.040112Z",
+    "scanned": "2026-11-18T08:21:08Z",
     "size": {
-      "amd64": 70486727,
-      "arm64": 66070590
+      "amd64": 70486609,
+      "arm64": 66070462
     },
     "vulns": {
       "CRITICAL": 17,
@@ -30,10 +31,11 @@
   },
   "7.0": {
     "build_seconds": {
-      "amd64": 125,
-      "arm64": 166
+      "amd64": 135,
+      "arm64": 179
     },
-    "debian": "9 ()",
+    "debian": "9 (stretch)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 13,
       "HIGH": 62,
@@ -44,11 +46,11 @@
     "php": "7.0.33",
     "php_eol": "2019-01-10",
     "php_support": "2018-01-04",
-    "pushed": "2026-11-17T21:54:58.983315Z",
-    "scanned": "2026-11-18T07:56:27Z",
+    "pushed": "2026-11-18T08:20:12.117292Z",
+    "scanned": "2026-11-18T08:21:07Z",
     "size": {
-      "amd64": 73957458,
-      "arm64": 69354932
+      "amd64": 73957868,
+      "arm64": 69354730
     },
     "vulns": {
       "CRITICAL": 17,
@@ -60,9 +62,10 @@
   "7.1": {
     "build_seconds": {
       "amd64": 155,
-      "arm64": 180
+      "arm64": 175
     },
     "debian": "10 (buster)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 14,
       "HIGH": 76,
@@ -74,7 +77,7 @@
     "php_eol": "2019-12-01",
     "php_support": "2018-12-01",
     "pushed": "2026-11-18T07:55:43.687208Z",
-    "scanned": "2026-11-18T07:56:31Z",
+    "scanned": "2026-11-18T08:21:09Z",
     "size": {
       "amd64": 76036673,
       "arm64": 74492191
@@ -88,10 +91,11 @@
   },
   "7.2": {
     "build_seconds": {
-      "amd64": 175,
-      "arm64": 170
+      "amd64": 118,
+      "arm64": 172
     },
     "debian": "10 (buster)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 12,
       "HIGH": 55,
@@ -102,11 +106,11 @@
     "php": "7.2.34",
     "php_eol": "2020-11-30",
     "php_support": "2019-11-30",
-    "pushed": "2026-11-18T07:55:46.529484Z",
-    "scanned": "2026-11-18T07:56:38Z",
+    "pushed": "2026-11-18T08:20:15.536939Z",
+    "scanned": "2026-11-18T08:21:02Z",
     "size": {
-      "amd64": 77123653,
-      "arm64": 75436691
+      "amd64": 77122973,
+      "arm64": 75436630
     },
     "vulns": {
       "CRITICAL": 15,
@@ -118,9 +122,10 @@
   "7.3": {
     "build_seconds": {
       "amd64": 181,
-      "arm64": 143
+      "arm64": 162
     },
     "debian": "11 (bullseye)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 12,
       "HIGH": 58,
@@ -132,7 +137,7 @@
     "php_eol": "2021-12-06",
     "php_support": "2020-12-06",
     "pushed": "2026-11-18T07:55:39.417854Z",
-    "scanned": "2026-11-18T07:56:30Z",
+    "scanned": "2026-11-18T08:21:00Z",
     "size": {
       "amd64": 75771288,
       "arm64": 74136970
@@ -146,10 +151,11 @@
   },
   "7.4": {
     "build_seconds": {
-      "amd64": 115,
-      "arm64": 150
+      "amd64": 161,
+      "arm64": 149
     },
     "debian": "11 (bullseye)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 5,
       "HIGH": 49,
@@ -160,11 +166,11 @@
     "php": "7.4.33",
     "php_eol": "2022-11-28",
     "php_support": "2021-11-28",
-    "pushed": "2026-11-18T07:55:45.774223Z",
-    "scanned": "2026-11-18T07:56:32Z",
+    "pushed": "2026-11-18T08:20:17.941107Z",
+    "scanned": "2026-11-18T08:21:09Z",
     "size": {
-      "amd64": 74046473,
-      "arm64": 72438229
+      "amd64": 74046614,
+      "arm64": 72438424
     },
     "vulns": {
       "CRITICAL": 14,
@@ -175,28 +181,26 @@
   },
   "8.0": {
     "build_seconds": {
-      "amd64": 772,
-      "arm64": 147
+      "amd64": 123,
+      "arm64": 139
     },
     "debian": "11 (bullseye)",
+    "debian_eol": true,
     "fixable": {
       "CRITICAL": 4,
       "HIGH": 40,
       "LOW": 33,
       "MEDIUM": 44
     },
-    "missing_extensions": [
-      "igbinary",
-      "redis"
-    ],
+    "missing_extensions": [],
     "php": "8.0.30",
     "php_eol": "2023-11-26",
     "php_support": "2022-11-26",
-    "pushed": "2026-11-18T07:55:44.213498Z",
-    "scanned": "2026-11-18T07:56:29Z",
+    "pushed": "2026-11-18T08:20:06.159626Z",
+    "scanned": "2026-11-18T08:20:55Z",
     "size": {
-      "amd64": 74735856,
-      "arm64": 73092153
+      "amd64": 75044924,
+      "arm64": 73091900
     },
     "vulns": {
       "CRITICAL": 13,
@@ -207,10 +211,11 @@
   },
   "8.1": {
     "build_seconds": {
-      "amd64": 142,
-      "arm64": 174
+      "amd64": 179,
+      "arm64": 152
     },
     "debian": "13 (trixie)",
+    "debian_eol": false,
     "fixable": {
       "CRITICAL": 5,
       "HIGH": 23,
@@ -221,11 +226,11 @@
     "php": "8.1.34",
     "php_eol": "2025-12-31",
     "php_support": "2023-11-25",
-    "pushed": "2026-11-18T07:55:55.966261Z",
-    "scanned": "2026-11-18T07:56:29Z",
+    "pushed": "2026-11-18T08:20:25.804652Z",
+    "scanned": "2026-11-18T08:21:00Z",
     "size": {
-      "amd64": 89753615,
-      "arm64": 88744799
+      "amd64": 89754389,
+      "arm64": 88745149
     },
     "vulns": {
       "CRITICAL": 6,
@@ -236,10 +241,11 @@
   },
   "8.2": {
     "build_seconds": {
-      "amd64": 109,
-      "arm64": 161
+      "amd64": 121,
+      "arm64": 172
     },
     "debian": "13 (trixie)",
+    "debian_eol": false,
     "fixable": {
       "CRITICAL": 0,
       "HIGH": 0,
@@ -250,11 +256,11 @@
     "php": "8.2.35",
     "php_eol": "2026-12-31",
     "php_support": "2024-12-31",
-    "pushed": "2026-11-18T07:55:40.902364Z",
-    "scanned": "2026-11-18T07:56:33Z",
+    "pushed": "2026-11-18T08:20:27.153715Z",
+    "scanned": "2026-11-18T08:20:54Z",
     "size": {
-      "amd64": 90490075,
-      "arm64": 89493576
+      "amd64": 90490390,
+      "arm64": 89493912
     },
     "vulns": {
       "CRITICAL": 1,
@@ -265,10 +271,11 @@
   },
   "8.3": {
     "build_seconds": {
-      "amd64": 180,
-      "arm64": 890
+      "amd64": 173,
+      "arm64": 174
     },
     "debian": "13 (trixie)",
+    "debian_eol": false,
     "fixable": {
       "CRITICAL": 0,
       "HIGH": 0,
@@ -279,11 +286,11 @@
     "php": "8.3.36",
     "php_eol": "2027-12-31",
     "php_support": "2025-12-31",
-    "pushed": "2026-11-18T07:55:49.261588Z",
-    "scanned": "2026-11-18T07:56:25Z",
+    "pushed": "2026-11-18T08:20:11.822404Z",
+    "scanned": "2026-11-18T08:21:09Z",
     "size": {
-      "amd64": 91207463,
-      "arm64": 89899098
+      "amd64": 91208063,
+      "arm64": 90199398
     },
     "vulns": {
       "CRITICAL": 1,
@@ -295,9 +302,10 @@
   "8.4": {
     "build_seconds": {
       "amd64": 176,
-      "arm64": 194
+      "arm64": 183
     },
     "debian": "13 (trixie)",
+    "debian_eol": false,
     "fixable": {
       "CRITICAL": 0,
       "HIGH": 0,
@@ -309,7 +317,7 @@
     "php_eol": "2028-12-31",
     "php_support": "2026-12-31",
     "pushed": "2026-11-18T07:55:46.004852Z",
-    "scanned": "2026-11-18T07:56:31Z",
+    "scanned": "2026-11-18T08:21:09Z",
     "size": {
       "amd64": 94393227,
       "arm64": 93007932
@@ -323,10 +331,11 @@
   },
   "8.5": {
     "build_seconds": {
-      "amd64": 133,
-      "arm64": 222
+      "amd64": 223,
+      "arm64": 209
     },
     "debian": "13 (trixie)",
+    "debian_eol": false,
     "fixable": {
       "CRITICAL": 0,
       "HIGH": 0,
@@ -337,11 +346,11 @@
     "php": "8.5.12",
     "php_eol": "2029-12-31",
     "php_support": "2027-12-31",
-    "pushed": "2026-11-18T07:55:48.921228Z",
-    "scanned": "2026-11-18T07:56:30Z",
+    "pushed": "2026-11-18T08:20:21.289919Z",
+    "scanned": "2026-11-18T08:21:06Z",
     "size": {
-      "amd64": 96543262,
-      "arm64": 95078675
+      "amd64": 96543437,
+      "arm64": 95078609
     },
     "vulns": {
       "CRITICAL": 1,
@@ -352,10 +361,11 @@
   },
   "8.6": {
     "build_seconds": {
-      "amd64": 193,
-      "arm64": 238
+      "amd64": 880,
+      "arm64": 887
     },
     "debian": "13 (trixie)",
+    "debian_eol": false,
     "fixable": {
       "CRITICAL": 0,
       "HIGH": 0,
@@ -370,11 +380,11 @@
       "yaml"
     ],
     "php": "8.6.0RC7",
-    "pushed": "2026-11-18T07:55:46.08864Z",
-    "scanned": "2026-11-18T07:56:32Z",
+    "pushed": "2026-11-18T08:20:16.685801Z",
+    "scanned": "2026-11-18T08:20:56Z",
     "size": {
-      "amd64": 95945941,
-      "arm64": 94370714
+      "amd64": 95946964,
+      "arm64": 94370545
     },
     "vulns": {
       "CRITICAL": 1,

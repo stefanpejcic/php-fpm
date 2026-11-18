@@ -207,21 +207,21 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 <!-- status:start -->
 | Tag | PHP | Debian | PHP support | Download amd64 / arm64 | Built (UTC) | Build time | Vulns C / H / M / L | Fixable C/H | Extensions |
 |---|---|---|---|---|---|---|---|---|---|
-| `openpanel/php-fpm:5.6` | 5.6.40 | 9 () | ⛔ EOL 2018-12 | 67 MB / 63 MB | 2026-11-18 07:55 | 1m54s / 2m40s | 17 / 70 / 33 / 26 | ⚠️ 13 critical, 59 high | ✅ all |
-| `openpanel/php-fpm:7.0` | 7.0.33 | 9 () | ⛔ EOL 2019-01 | 71 MB / 66 MB | 2026-11-17 21:54 | 2m05s / 2m46s | 17 / 74 / 34 / 28 | ⚠️ 13 critical, 62 high | ✅ all |
-| `openpanel/php-fpm:7.1` | 7.1.33 | 10 (buster) | ⛔ EOL 2019-12 | 73 MB / 71 MB | 2026-11-18 07:55 | 2m35s / 3m00s | 17 / 94 / 65 / 21 | ⚠️ 14 critical, 76 high | ✅ all |
-| `openpanel/php-fpm:7.2` | 7.2.34 | 10 (buster) | ⛔ EOL 2020-11 | 74 MB / 72 MB | 2026-11-18 07:55 | 2m55s / 2m50s | 15 / 73 / 55 / 19 | ⚠️ 12 critical, 55 high | ✅ all |
-| `openpanel/php-fpm:7.3` | 7.3.33 | 11 (bullseye) | ⛔ EOL 2021-12 | 72 MB / 71 MB | 2026-11-18 07:55 | 3m01s / 2m23s | 21 / 136 / 183 / 163 | ⚠️ 12 critical, 58 high | ✅ all |
-| `openpanel/php-fpm:7.4` | 7.4.33 | 11 (bullseye) | ⛔ EOL 2022-11 | 71 MB / 69 MB | 2026-11-18 07:55 | 1m55s / 2m30s | 14 / 127 / 179 / 162 | ⚠️ 5 critical, 49 high | ✅ all |
-| `openpanel/php-fpm:8.0` | 8.0.30 | 11 (bullseye) | ⛔ EOL 2023-11 | 71 MB / 70 MB | 2026-11-18 07:55 | 12m52s / 2m27s | 13 / 118 / 167 / 162 | ⚠️ 4 critical, 40 high | ⚠️ missing igbinary, redis |
-| `openpanel/php-fpm:8.1` | 8.1.34 | 13 (trixie) | ⛔ EOL 2025-12 | 86 MB / 85 MB | 2026-11-18 07:55 | 2m22s / 2m54s | 6 / 58 / 110 / 96 | ⚠️ 5 critical, 23 high | ✅ all |
-| `openpanel/php-fpm:8.2` | 8.2.35 | 13 (trixie) | 🟡 security until 2026-12 | 86 MB / 85 MB | 2026-11-18 07:55 | 1m49s / 2m41s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.3` | 8.3.36 | 13 (trixie) | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-18 07:55 | 3m00s / 14m50s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.4` | 8.4.27 | 13 (trixie) | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-18 07:55 | 2m56s / 3m14s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.5` | 8.5.12 | 13 (trixie) | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-18 07:55 | 2m13s / 3m42s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.6` | 8.6.0RC7 | 13 (trixie) | 🧪 pre-release | 92 MB / 90 MB | 2026-11-18 07:55 | 3m13s / 3m58s | 1 / 35 / 72 / 84 | ✅ none | ⚠️ missing apcu, igbinary, msgpack, redis, yaml |
+| `openpanel/php-fpm:5.6` | 5.6.40 | 9 (stretch) | ⛔ EOL 2018-12 | 67 MB / 63 MB | 2026-11-18 08:20 | 2m53s / 2m26s | 17 / 70 / 33 / 26 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:7.0` | 7.0.33 | 9 (stretch) | ⛔ EOL 2019-01 | 71 MB / 66 MB | 2026-11-18 08:20 | 2m15s / 2m59s | 17 / 74 / 34 / 28 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:7.1` | 7.1.33 | 10 (buster) | ⛔ EOL 2019-12 | 73 MB / 71 MB | 2026-11-18 07:55 | 2m35s / 2m55s | 17 / 94 / 65 / 21 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:7.2` | 7.2.34 | 10 (buster) | ⛔ EOL 2020-11 | 74 MB / 72 MB | 2026-11-18 08:20 | 1m58s / 2m52s | 15 / 73 / 55 / 19 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:7.3` | 7.3.33 | 11 (bullseye) | ⛔ EOL 2021-12 | 72 MB / 71 MB | 2026-11-18 07:55 | 3m01s / 2m42s | 21 / 136 / 183 / 163 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:7.4` | 7.4.33 | 11 (bullseye) | ⛔ EOL 2022-11 | 71 MB / 69 MB | 2026-11-18 08:20 | 2m41s / 2m29s | 14 / 127 / 179 / 162 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:8.0` | 8.0.30 | 11 (bullseye) | ⛔ EOL 2023-11 | 72 MB / 70 MB | 2026-11-18 08:20 | 2m03s / 2m19s | 13 / 118 / 167 / 162 | ⛔ Debian EOL, no updates | ✅ all |
+| `openpanel/php-fpm:8.1` | 8.1.34 | 13 (trixie) | ⛔ EOL 2025-12 | 86 MB / 85 MB | 2026-11-18 08:20 | 2m59s / 2m32s | 6 / 58 / 110 / 96 | ⚠️ 5 critical, 23 high | ✅ all |
+| `openpanel/php-fpm:8.2` | 8.2.35 | 13 (trixie) | 🟡 security until 2026-12 | 86 MB / 85 MB | 2026-11-18 08:20 | 2m01s / 2m52s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.3` | 8.3.36 | 13 (trixie) | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-18 08:20 | 2m53s / 2m54s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.4` | 8.4.27 | 13 (trixie) | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-18 07:55 | 2m56s / 3m03s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.5` | 8.5.12 | 13 (trixie) | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-18 08:20 | 3m43s / 3m29s | 1 / 35 / 72 / 84 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.6` | 8.6.0RC7 | 13 (trixie) | 🧪 pre-release | 92 MB / 90 MB | 2026-11-18 08:20 | 14m40s / 14m47s | 1 / 35 / 72 / 84 | ✅ none | ⚠️ missing apcu, igbinary, msgpack, redis, yaml |
 
-_Updated automatically by the build workflow, last run 2026-11-18 07:56 UTC._
+_Updated automatically by the build workflow, last run 2026-11-18 08:21 UTC._
 <!-- status:end -->
 
 ## FAQ
