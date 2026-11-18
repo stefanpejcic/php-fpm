@@ -1,169 +1,386 @@
 {
   "5.6": {
     "build_seconds": {
-      "amd64": 162,
-      "arm64": 153
+      "amd64": 114,
+      "arm64": 160
     },
+    "debian": "9 ()",
+    "fixable": {
+      "CRITICAL": 13,
+      "HIGH": 59,
+      "LOW": 9,
+      "MEDIUM": 26
+    },
+    "missing_extensions": [],
+    "php": "5.6.40",
     "php_eol": "2018-12-31",
     "php_support": "2017-01-19",
-    "pushed": "2026-11-18T07:25:42.875452Z",
+    "pushed": "2026-11-18T07:55:54.700631Z",
+    "scanned": "2026-11-18T07:56:34Z",
     "size": {
-      "amd64": 70486748,
-      "arm64": 66070574
+      "amd64": 70486727,
+      "arm64": 66070590
+    },
+    "vulns": {
+      "CRITICAL": 17,
+      "HIGH": 70,
+      "LOW": 26,
+      "MEDIUM": 33
     }
   },
   "7.0": {
     "build_seconds": {
       "amd64": 125,
-      "arm64": 163
+      "arm64": 166
     },
+    "debian": "9 ()",
+    "fixable": {
+      "CRITICAL": 13,
+      "HIGH": 62,
+      "LOW": 12,
+      "MEDIUM": 27
+    },
+    "missing_extensions": [],
+    "php": "7.0.33",
     "php_eol": "2019-01-10",
     "php_support": "2018-01-04",
     "pushed": "2026-11-17T21:54:58.983315Z",
+    "scanned": "2026-11-18T07:56:27Z",
     "size": {
       "amd64": 73957458,
       "arm64": 69354932
+    },
+    "vulns": {
+      "CRITICAL": 17,
+      "HIGH": 74,
+      "LOW": 28,
+      "MEDIUM": 34
     }
   },
   "7.1": {
     "build_seconds": {
-      "amd64": 183,
-      "arm64": 184
+      "amd64": 155,
+      "arm64": 180
     },
+    "debian": "10 (buster)",
+    "fixable": {
+      "CRITICAL": 14,
+      "HIGH": 76,
+      "LOW": 9,
+      "MEDIUM": 43
+    },
+    "missing_extensions": [],
+    "php": "7.1.33",
     "php_eol": "2019-12-01",
     "php_support": "2018-12-01",
-    "pushed": "2026-11-17T21:55:01.589911Z",
+    "pushed": "2026-11-18T07:55:43.687208Z",
+    "scanned": "2026-11-18T07:56:31Z",
     "size": {
-      "amd64": 76036571,
-      "arm64": 74492266
+      "amd64": 76036673,
+      "arm64": 74492191
+    },
+    "vulns": {
+      "CRITICAL": 17,
+      "HIGH": 94,
+      "LOW": 21,
+      "MEDIUM": 65
     }
   },
   "7.2": {
     "build_seconds": {
-      "amd64": 184,
-      "arm64": 154
+      "amd64": 175,
+      "arm64": 170
     },
+    "debian": "10 (buster)",
+    "fixable": {
+      "CRITICAL": 12,
+      "HIGH": 55,
+      "LOW": 7,
+      "MEDIUM": 33
+    },
+    "missing_extensions": [],
+    "php": "7.2.34",
     "php_eol": "2020-11-30",
     "php_support": "2019-11-30",
-    "pushed": "2026-11-17T21:55:02.291974Z",
+    "pushed": "2026-11-18T07:55:46.529484Z",
+    "scanned": "2026-11-18T07:56:38Z",
     "size": {
-      "amd64": 77123516,
-      "arm64": 75436686
+      "amd64": 77123653,
+      "arm64": 75436691
+    },
+    "vulns": {
+      "CRITICAL": 15,
+      "HIGH": 73,
+      "LOW": 19,
+      "MEDIUM": 55
     }
   },
   "7.3": {
     "build_seconds": {
-      "amd64": 117,
-      "arm64": 182
+      "amd64": 181,
+      "arm64": 143
     },
+    "debian": "11 (bullseye)",
+    "fixable": {
+      "CRITICAL": 12,
+      "HIGH": 58,
+      "LOW": 34,
+      "MEDIUM": 60
+    },
+    "missing_extensions": [],
+    "php": "7.3.33",
     "php_eol": "2021-12-06",
     "php_support": "2020-12-06",
-    "pushed": "2026-11-17T21:54:56.347Z",
+    "pushed": "2026-11-18T07:55:39.417854Z",
+    "scanned": "2026-11-18T07:56:30Z",
     "size": {
-      "amd64": 75771403,
-      "arm64": 74136880
+      "amd64": 75771288,
+      "arm64": 74136970
+    },
+    "vulns": {
+      "CRITICAL": 21,
+      "HIGH": 136,
+      "LOW": 163,
+      "MEDIUM": 183
     }
   },
   "7.4": {
     "build_seconds": {
-      "amd64": 170,
-      "arm64": 156
+      "amd64": 115,
+      "arm64": 150
     },
+    "debian": "11 (bullseye)",
+    "fixable": {
+      "CRITICAL": 5,
+      "HIGH": 49,
+      "LOW": 33,
+      "MEDIUM": 56
+    },
+    "missing_extensions": [],
+    "php": "7.4.33",
     "php_eol": "2022-11-28",
     "php_support": "2021-11-28",
-    "pushed": "2026-11-17T21:54:56.926838Z",
+    "pushed": "2026-11-18T07:55:45.774223Z",
+    "scanned": "2026-11-18T07:56:32Z",
     "size": {
-      "amd64": 74046671,
-      "arm64": 72438246
+      "amd64": 74046473,
+      "arm64": 72438229
+    },
+    "vulns": {
+      "CRITICAL": 14,
+      "HIGH": 127,
+      "LOW": 162,
+      "MEDIUM": 179
     }
   },
   "8.0": {
     "build_seconds": {
-      "amd64": 129,
-      "arm64": 171
+      "amd64": 772,
+      "arm64": 147
     },
+    "debian": "11 (bullseye)",
+    "fixable": {
+      "CRITICAL": 4,
+      "HIGH": 40,
+      "LOW": 33,
+      "MEDIUM": 44
+    },
+    "missing_extensions": [
+      "igbinary",
+      "redis"
+    ],
+    "php": "8.0.30",
     "php_eol": "2023-11-26",
     "php_support": "2022-11-26",
-    "pushed": "2026-11-17T21:54:58.214274Z",
+    "pushed": "2026-11-18T07:55:44.213498Z",
+    "scanned": "2026-11-18T07:56:29Z",
     "size": {
-      "amd64": 75044565,
-      "arm64": 73091997
+      "amd64": 74735856,
+      "arm64": 73092153
+    },
+    "vulns": {
+      "CRITICAL": 13,
+      "HIGH": 118,
+      "LOW": 162,
+      "MEDIUM": 167
     }
   },
   "8.1": {
     "build_seconds": {
-      "amd64": 112,
-      "arm64": 171
+      "amd64": 142,
+      "arm64": 174
     },
+    "debian": "13 (trixie)",
+    "fixable": {
+      "CRITICAL": 5,
+      "HIGH": 23,
+      "LOW": 12,
+      "MEDIUM": 38
+    },
+    "missing_extensions": [],
+    "php": "8.1.34",
     "php_eol": "2025-12-31",
     "php_support": "2023-11-25",
-    "pushed": "2026-11-17T21:54:52.943557Z",
+    "pushed": "2026-11-18T07:55:55.966261Z",
+    "scanned": "2026-11-18T07:56:29Z",
     "size": {
-      "amd64": 89753804,
-      "arm64": 88744800
+      "amd64": 89753615,
+      "arm64": 88744799
+    },
+    "vulns": {
+      "CRITICAL": 6,
+      "HIGH": 58,
+      "LOW": 96,
+      "MEDIUM": 110
     }
   },
   "8.2": {
     "build_seconds": {
-      "amd64": 124,
-      "arm64": 166
+      "amd64": 109,
+      "arm64": 161
     },
+    "debian": "13 (trixie)",
+    "fixable": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0
+    },
+    "missing_extensions": [],
+    "php": "8.2.35",
     "php_eol": "2026-12-31",
     "php_support": "2024-12-31",
-    "pushed": "2026-11-17T21:54:50.173976Z",
+    "pushed": "2026-11-18T07:55:40.902364Z",
+    "scanned": "2026-11-18T07:56:33Z",
     "size": {
-      "amd64": 90490076,
-      "arm64": 89493756
+      "amd64": 90490075,
+      "arm64": 89493576
+    },
+    "vulns": {
+      "CRITICAL": 1,
+      "HIGH": 35,
+      "LOW": 84,
+      "MEDIUM": 72
     }
   },
   "8.3": {
     "build_seconds": {
-      "amd64": 141,
-      "arm64": 162
+      "amd64": 180,
+      "arm64": 890
     },
+    "debian": "13 (trixie)",
+    "fixable": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0
+    },
+    "missing_extensions": [],
+    "php": "8.3.36",
     "php_eol": "2027-12-31",
     "php_support": "2025-12-31",
-    "pushed": "2026-11-17T21:55:02.005838Z",
+    "pushed": "2026-11-18T07:55:49.261588Z",
+    "scanned": "2026-11-18T07:56:25Z",
     "size": {
-      "amd64": 91207584,
-      "arm64": 90199991
+      "amd64": 91207463,
+      "arm64": 89899098
+    },
+    "vulns": {
+      "CRITICAL": 1,
+      "HIGH": 35,
+      "LOW": 84,
+      "MEDIUM": 72
     }
   },
   "8.4": {
     "build_seconds": {
-      "amd64": 174,
-      "arm64": 177
+      "amd64": 176,
+      "arm64": 194
     },
+    "debian": "13 (trixie)",
+    "fixable": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0
+    },
+    "missing_extensions": [],
+    "php": "8.4.27",
     "php_eol": "2028-12-31",
     "php_support": "2026-12-31",
-    "pushed": "2026-11-17T21:54:53.709969Z",
+    "pushed": "2026-11-18T07:55:46.004852Z",
+    "scanned": "2026-11-18T07:56:31Z",
     "size": {
-      "amd64": 94393303,
-      "arm64": 93007802
+      "amd64": 94393227,
+      "arm64": 93007932
+    },
+    "vulns": {
+      "CRITICAL": 1,
+      "HIGH": 35,
+      "LOW": 84,
+      "MEDIUM": 72
     }
   },
   "8.5": {
     "build_seconds": {
-      "amd64": 151,
-      "arm64": 197
+      "amd64": 133,
+      "arm64": 222
     },
+    "debian": "13 (trixie)",
+    "fixable": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0
+    },
+    "missing_extensions": [],
+    "php": "8.5.12",
     "php_eol": "2029-12-31",
     "php_support": "2027-12-31",
-    "pushed": "2026-11-17T21:54:54.993459Z",
+    "pushed": "2026-11-18T07:55:48.921228Z",
+    "scanned": "2026-11-18T07:56:30Z",
     "size": {
-      "amd64": 96543203,
-      "arm64": 95078720
+      "amd64": 96543262,
+      "arm64": 95078675
+    },
+    "vulns": {
+      "CRITICAL": 1,
+      "HIGH": 35,
+      "LOW": 84,
+      "MEDIUM": 72
     }
   },
   "8.6": {
     "build_seconds": {
-      "amd64": 206,
-      "arm64": 224
+      "amd64": 193,
+      "arm64": 238
     },
-    "pushed": "2026-11-17T21:54:48.034674Z",
+    "debian": "13 (trixie)",
+    "fixable": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0
+    },
+    "missing_extensions": [
+      "apcu",
+      "igbinary",
+      "msgpack",
+      "redis",
+      "yaml"
+    ],
+    "php": "8.6.0RC7",
+    "pushed": "2026-11-18T07:55:46.08864Z",
+    "scanned": "2026-11-18T07:56:32Z",
     "size": {
-      "amd64": 95945898,
-      "arm64": 94370751
+      "amd64": 95945941,
+      "arm64": 94370714
+    },
+    "vulns": {
+      "CRITICAL": 1,
+      "HIGH": 35,
+      "LOW": 84,
+      "MEDIUM": 72
     }
   }
 }
