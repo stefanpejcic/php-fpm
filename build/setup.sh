@@ -39,6 +39,13 @@ fi
 # ---------------------------------------------------------------------------
 # 2. Tools OpenPanel runs inside the container (ps for install status, less for wp-cli, unzip for composer/wp)
 # ---------------------------------------------------------------------------
+# security updates the official base image doesn't have yet (or never gets again, e.g. php:8.1 after PHP 8.1 EOL);
+# archived Debian releases get no more updates, nothing to upgrade there
+case "$CODENAME" in
+    jessie|stretch|buster|bullseye) ;;
+    *) for i in 1 2 3; do apt-get upgrade -y -q && break; [ "$i" = 3 ] && exit 1; sleep $((i * 15)); apt_update || true; done ;;
+esac
+
 for i in 1 2 3; do
     apt-get install -y -q --no-install-recommends procps less unzip ca-certificates curl xz-utils && break
     [ "$i" = 3 ] && exit 1; sleep $((i * 15)); apt_update || true
@@ -72,15 +79,18 @@ for e in $OPTIONAL; do loaded "$e" || opt="$opt $e"; done
 
 # one install-php-extensions run is much faster (build deps installed/removed once)
 # shellcheck disable=SC2086
-if ! install-php-extensions $todo $opt; then
+if [ "$PRERELEASE" = 1 ]; then
+    # pre-release PHP: PECL extensions that don't support it yet fail, one try each and skip them
+    [ -n "$todo" ] && ipe $todo
+    for e in $opt; do
+        install-php-extensions "$e" || echo "!!! WARNING: $e doesn't build on pre-release PHP ${PHP_MM} yet, skipping"
+    done
+elif ! install-php-extensions $todo $opt; then
     echo "!!! combined install failed, retrying one by one"
     [ -n "$todo" ] && ipe $todo
     for e in $opt; do
         loaded "$e" && continue
-        if ! ipe "$e"; then
-            [ "$PRERELEASE" = 1 ] || { echo "!!! $e could not be installed for PHP ${PHP_MM}" >&2; exit 1; }
-            echo "!!! WARNING: $e doesn't build on pre-release PHP ${PHP_MM} yet, skipping"
-        fi
+        ipe "$e" || { echo "!!! $e could not be installed for PHP ${PHP_MM}" >&2; exit 1; }
     done
 fi
 
