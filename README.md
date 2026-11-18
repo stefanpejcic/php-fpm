@@ -207,7 +207,7 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 <!-- status:start -->
 | Tag | PHP | Debian | PHP support | Download amd64 / arm64 | Built (UTC) | Build time | Vulns C / H / M / L | Fixable C/H | Extensions |
 |---|---|---|---|---|---|---|---|---|---|
-| `openpanel/php-fpm:5.6` | - | - | ⛔ EOL 2018-12 | 67 MB / 63 MB | 2026-11-17 20:30 | 2m49s / 2m33s | - | - | - |
+| `openpanel/php-fpm:5.6` | - | - | ⛔ EOL 2018-12 | 67 MB / 63 MB | 2026-11-18 07:25 | 2m42s / 2m33s | - | - | - |
 | `openpanel/php-fpm:7.0` | - | - | ⛔ EOL 2019-01 | 71 MB / 66 MB | 2026-11-17 21:54 | 2m05s / 2m43s | - | - | - |
 | `openpanel/php-fpm:7.1` | - | - | ⛔ EOL 2019-12 | 73 MB / 71 MB | 2026-11-17 21:55 | 3m03s / 3m04s | - | - | - |
 | `openpanel/php-fpm:7.2` | - | - | ⛔ EOL 2020-11 | 74 MB / 72 MB | 2026-11-17 21:55 | 3m04s / 2m34s | - | - | - |
@@ -221,7 +221,7 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 | `openpanel/php-fpm:8.5` | - | - | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-17 21:54 | 2m31s / 3m17s | - | - | - |
 | `openpanel/php-fpm:8.6` | - | - | 🧪 pre-release | 92 MB / 90 MB | 2026-11-17 21:54 | 3m26s / 3m44s | - | - | - |
 
-_Updated automatically by the build workflow, last run 2026-11-17 21:56 UTC._
+_Updated automatically by the build workflow, last run 2026-11-18 07:26 UTC._
 <!-- status:end -->
 
 ## FAQ
