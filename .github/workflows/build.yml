@@ -203,11 +203,17 @@ jobs:
           jq -s '.[0] + {debian_eol: (.[1].Metadata.OS.EOSL // false)}' out/counts.json out/trivy.json > out/vulns.json
           jq -s 'add' out/info.json out/vulns.json > out/scan.json
           cat out/scan.json
+          # Code scanning only for what can be acted on: on EOL Debian nothing can be upgraded, so upload an empty result,
+          # which also closes the alerts earlier runs opened for that version
+          if [ "$(jq -r .debian_eol out/scan.json)" = true ]; then
+            jq '.runs |= map(.results = [])' out/trivy.sarif > out/trivy.sarif.tmp && mv out/trivy.sarif.tmp out/trivy.sarif
+          fi
           {
             echo "### $REF"
             echo "PHP $(jq -r .php out/scan.json), Debian $(jq -r .debian out/scan.json)"
             echo "- vulnerabilities C/H/M/L: $(jq -r '.vulns | "\(.CRITICAL) / \(.HIGH) / \(.MEDIUM) / \(.LOW)"' out/scan.json)"
-            echo "- with a fix available (critical/high): $(jq -r '.fixable | "\(.CRITICAL) / \(.HIGH)"' out/scan.json)"
+            if [ "$(jq -r .debian_eol out/scan.json)" = true ]; then echo "- Debian EOL: no package updates, not reported to code scanning"
+            else echo "- with a fix available (critical/high): $(jq -r '.fixable | "\(.CRITICAL) / \(.HIGH)"' out/scan.json)"; fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show failure as annotation
