@@ -1,10 +1,11 @@
 name: Build and publish
 
-# Nightly rebuild of every PHP version (picks up new PHP patch releases, Debian security
+# Daily rebuild of every PHP version (picks up new PHP patch releases, Debian security
 # updates and new extension versions), plus manual runs from the Actions tab.
 on:
   schedule:
-    - cron: "0 2 * * *"
+    # 16:00 UTC (17:00 CET), after the PHP releases of the day (around 14:00 UTC) and the official images rebuilt on them
+    - cron: "0 16 * * *"
   workflow_dispatch:
     inputs:
       versions:
@@ -269,6 +270,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: openpanel/php-fpm
-          short-description: "Slim, fast-starting Debian PHP-FPM images, PHP 5.6 to 8.6, amd64 + arm64, rebuilt nightly"
+          short-description: "Slim, fast-starting Debian PHP-FPM images, PHP 5.6 to 8.6, amd64 + arm64, rebuilt daily"
           readme-filepath: ./README.md
           enable-url-completion: true
