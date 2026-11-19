@@ -258,7 +258,7 @@ Usually 0.3-0.7 s from `docker run` to accepting FastCGI connections.
 
 ## Building
 
-- **GitHub Actions** ([`.github/workflows/build.yml`](.github/workflows/build.yml)): every day at 16:00 UTC (in the afternoon after the PHP releases, which usually come out around 14:00 UTC), on push to `main`, and manually from *Actions → Build and publish → Run workflow* (optionally only some versions, e.g. `8.4 8.5`). Each version is built natively on amd64 and arm64 runners, tested with [`test.sh`](test.sh), published as a multi-arch tag, scanned with Trivy, and the status table above is updated.
+- **GitHub Actions** ([`.github/workflows/build.yml`](.github/workflows/build.yml)): every day at 17:00 UTC (a few hours after the PHP releases, which usually come out around 14:00 UTC), on push to `main`, and manually from *Actions → Build and publish → Run workflow* (optionally only some versions, e.g. `8.4 8.5`). Each version is built natively on amd64 and arm64 runners, tested with [`test.sh`](test.sh), published as a multi-arch tag, scanned with Trivy, and the status table above is updated.
 - **Locally**: `./build.sh 8.4` (docker or podman), `./build.sh all`, `PUSH=1 ./build.sh 8.4` for a multi-arch push. Test with `./test.sh openpanel/php-fpm:8.4`.
 - PHP versions and their base images are listed in [`versions.txt`](versions.txt).
 

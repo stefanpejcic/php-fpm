@@ -4,8 +4,8 @@ name: Build and publish
 # updates and new extension versions), plus manual runs from the Actions tab.
 on:
   schedule:
-    # 16:00 UTC (17:00 CET), after the PHP releases of the day (around 14:00 UTC) and the official images rebuilt on them
-    - cron: "0 16 * * *"
+    # 17:00 UTC (18:00 CET), a few hours after the PHP releases of the day (around 14:00 UTC), once the official images are rebuilt on them
+    - cron: "0 17 * * *"
   workflow_dispatch:
     inputs:
       versions:
