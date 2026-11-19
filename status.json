@@ -241,8 +241,8 @@
   },
   "8.2": {
     "build_seconds": {
-      "amd64": 117,
-      "arm64": 170
+      "amd64": 155,
+      "arm64": 242
     },
     "debian": "13 (trixie)",
     "debian_eol": false,
@@ -253,14 +253,14 @@
       "MEDIUM": 0
     },
     "missing_extensions": [],
-    "php": "8.2.35",
+    "php": "8.2.36",
     "php_eol": "2026-12-31",
     "php_support": "2024-12-31",
-    "pushed": "2026-11-19T10:09:02.311388Z",
-    "scanned": "2026-11-19T10:10:01Z",
+    "pushed": "2026-11-19T15:42:45.533008Z",
+    "scanned": "2026-11-19T15:43:35Z",
     "size": {
-      "amd64": 90490539,
-      "arm64": 89493892
+      "amd64": 90506444,
+      "arm64": 89510517
     },
     "vulns": {
       "CRITICAL": 1,
@@ -271,8 +271,8 @@
   },
   "8.3": {
     "build_seconds": {
-      "amd64": 165,
-      "arm64": 181
+      "amd64": 156,
+      "arm64": 214
     },
     "debian": "13 (trixie)",
     "debian_eol": false,
@@ -283,14 +283,14 @@
       "MEDIUM": 0
     },
     "missing_extensions": [],
-    "php": "8.3.36",
+    "php": "8.3.37",
     "php_eol": "2027-12-31",
     "php_support": "2025-12-31",
-    "pushed": "2026-11-19T10:09:07.052063Z",
-    "scanned": "2026-11-19T10:10:13Z",
+    "pushed": "2026-11-19T15:42:59.008444Z",
+    "scanned": "2026-11-19T15:43:35Z",
     "size": {
-      "amd64": 91208047,
-      "arm64": 90199571
+      "amd64": 91220440,
+      "arm64": 90217450
     },
     "vulns": {
       "CRITICAL": 1,
@@ -301,8 +301,8 @@
   },
   "8.4": {
     "build_seconds": {
-      "amd64": 117,
-      "arm64": 176
+      "amd64": 144,
+      "arm64": 241
     },
     "debian": "13 (trixie)",
     "debian_eol": false,
@@ -313,14 +313,14 @@
       "MEDIUM": 0
     },
     "missing_extensions": [],
-    "php": "8.4.27",
+    "php": "8.4.28",
     "php_eol": "2028-12-31",
     "php_support": "2026-12-31",
-    "pushed": "2026-11-19T10:09:30.917664Z",
-    "scanned": "2026-11-19T10:10:13Z",
+    "pushed": "2026-11-19T15:42:56.602457Z",
+    "scanned": "2026-11-19T15:43:41Z",
     "size": {
-      "amd64": 94393861,
-      "arm64": 93007741
+      "amd64": 94454213,
+      "arm64": 93069700
     },
     "vulns": {
       "CRITICAL": 1,

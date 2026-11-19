@@ -215,13 +215,13 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 | `openpanel/php-fpm:7.4` | 7.4.33 | 11 (bullseye) | ⛔ EOL 2022-11 | 71 MB / 69 MB | 2026-11-19 10:09 | 1m56s / 2m20s | 14 / 127 / 183 / 163 | ⛔ Debian EOL, no updates | ✅ all |
 | `openpanel/php-fpm:8.0` | 8.0.30 | 11 (bullseye) | ⛔ EOL 2023-11 | 72 MB / 70 MB | 2026-11-19 10:09 | 3m17s / 2m32s | 13 / 118 / 171 / 163 | ⛔ Debian EOL, no updates | ✅ all |
 | `openpanel/php-fpm:8.1` | 8.1.34 | 13 (trixie) | ⛔ EOL 2025-12 | 86 MB / 85 MB | 2026-11-19 10:09 | 2m06s / 2m47s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.2` | 8.2.35 | 13 (trixie) | 🟡 security until 2026-12 | 86 MB / 85 MB | 2026-11-19 10:09 | 1m57s / 2m50s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.3` | 8.3.36 | 13 (trixie) | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-19 10:09 | 2m45s / 3m01s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.4` | 8.4.27 | 13 (trixie) | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-19 10:09 | 1m57s / 2m56s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.2` | 8.2.36 | 13 (trixie) | 🟡 security until 2026-12 | 86 MB / 85 MB | 2026-11-19 15:42 | 2m35s / 4m02s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.3` | 8.3.37 | 13 (trixie) | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-19 15:42 | 2m36s / 3m34s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
+| `openpanel/php-fpm:8.4` | 8.4.28 | 13 (trixie) | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-19 15:42 | 2m24s / 4m01s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
 | `openpanel/php-fpm:8.5` | 8.5.12 | 13 (trixie) | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-19 10:09 | 2m27s / 3m17s | 1 / 35 / 76 / 85 | ✅ none | ✅ all |
 | `openpanel/php-fpm:8.6` | 8.6.0RC7 | 13 (trixie) | 🧪 pre-release | 92 MB / 90 MB | 2026-11-19 10:09 | 3m47s / 5m01s | 1 / 35 / 76 / 85 | ✅ none | ⚠️ missing apcu, igbinary, msgpack, redis, yaml |
 
-_Updated automatically by the build workflow, last run 2026-11-19 10:10 UTC._
+_Updated automatically by the build workflow, last run 2026-11-19 15:44 UTC._
 <!-- status:end -->
 
 ## FAQ
