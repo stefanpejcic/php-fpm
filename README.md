@@ -6,7 +6,7 @@
 [![PHP](https://img.shields.io/badge/PHP-5.6%20%E2%80%93%208.6-777bb4)](#supported-tags)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-**`openpanel/php-fpm`** is a set of slim, fast-starting **PHP-FPM Docker images** based on **Debian**, one tag per PHP version from **PHP 5.6 to PHP 8.6**, built for **amd64 and arm64** (Apple Silicon, AWS Graviton, Raspberry Pi 4/5) and **rebuilt every day** with the latest PHP patch release and Debian security updates.
+**`openpanel/php-fpm`** is a set of slim, fast-starting **PHP-FPM Docker images** based on **Debian**, one tag per PHP version from **PHP 5.6 to PHP 8.6**, built for **amd64 and arm64** (Apple Silicon, AWS Graviton, Raspberry Pi 4/5) and **rebuilt every night** with the latest PHP patch release and Debian security updates.
 
 They are used by [OpenPanel](https://openpanel.com) to run PHP for every hosting account, and work standalone with **Docker, Docker Compose, Podman (also rootless) and Kubernetes**, behind **nginx, Apache, Caddy, OpenResty or Traefik**. Good for **WordPress, Laravel, Symfony, Drupal, Joomla, Magento, WooCommerce** and **legacy PHP 5.6 / 7.x applications**.
 
@@ -200,7 +200,7 @@ The webserver needs the same files at the same path (`/var/www/html`), e.g. the 
 Updated by every build: PHP and Debian version, PHP upstream support, compressed download size, when the tag was pushed, how long the build took, and a [Trivy](https://trivy.dev) vulnerability scan of the published image (amd64).
 
 - **Vulns C / H / M / L**: critical / high / medium / low findings in the image's Debian packages.
-- **Fixable C/H**: critical/high findings that already have a fix in Debian, the only ones that need action (normally the next daily build picks them up). EOL Debian releases (PHP 5.6-8.0 images) no longer get fixes, so their totals only grow.
+- **Fixable C/H**: critical/high findings that already have a fix in Debian, the only ones that need action (normally the next nightly build picks them up). EOL Debian releases (PHP 5.6-8.0 images) no longer get fixes, so their totals only grow.
 - PHP itself is compiled from source, not a Debian package, so PHP CVEs are not counted here; that's what the **PHP support** column is for.
 - Full findings: *Security → Code scanning* (high/critical with a fix available) and each workflow run's summary.
 
@@ -227,7 +227,7 @@ _Updated automatically by the build workflow, last run 2026-11-19 10:10 UTC._
 ## FAQ
 
 **How do I run PHP 5.6 or PHP 7.x in Docker today?**
-Use `openpanel/php-fpm:5.6`, `:7.0` ... `:7.4`. The official images for these versions are no longer updated and their Debian releases are archived, so `apt-get` and extension installs fail there. These images point apt at `archive.debian.org`, so `phpaddmod` still works. They are rebuilt daily, but PHP itself gets no more security fixes, so treat them as legacy and isolate them.
+Use `openpanel/php-fpm:5.6`, `:7.0` ... `:7.4`. The official images for these versions are no longer updated and their Debian releases are archived, so `apt-get` and extension installs fail there. These images point apt at `archive.debian.org`, so `phpaddmod` still works. They are rebuilt nightly, but PHP itself gets no more security fixes, so treat them as legacy and isolate them.
 
 **How do I install a PHP extension in a running container?**
 `docker exec <container> phpaddmod <extension>` (e.g. `imagick`, `soap`, `xdebug`, `memcached`), then reload with `kill -USR2 1` inside the container, or restart it.
@@ -236,7 +236,7 @@ Use `openpanel/php-fpm:5.6`, `:7.0` ... `:7.4`. The official images for these ve
 Yes. Every tag is a multi-arch manifest for `linux/amd64` and `linux/arm64`, built and tested natively on both.
 
 **How is this different from the official `php:fpm` image?**
-It starts from the official image and adds: common extensions preinstalled, Composer, memory-based pool tuning, unix socket mode, `phpaddmod`/`phpdelmod`, no compiler toolchain (smaller), working apt on EOL PHP versions, daily rebuilds, and a published Trivy scan.
+It starts from the official image and adds: common extensions preinstalled, Composer, memory-based pool tuning, unix socket mode, `phpaddmod`/`phpdelmod`, no compiler toolchain (smaller), working apt on EOL PHP versions, nightly rebuilds, and a published Trivy scan.
 
 **Why is there no `latest` tag?**
 Upgrading the PHP minor version can break applications. Pin the version you need, e.g. `openpanel/php-fpm:8.4`; it still gets every 8.4.x patch release automatically.
@@ -258,7 +258,7 @@ Usually 0.3-0.7 s from `docker run` to accepting FastCGI connections.
 
 ## Building
 
-- **GitHub Actions** ([`.github/workflows/build.yml`](.github/workflows/build.yml)): every day at 17:00 UTC (a few hours after the PHP releases, which usually come out around 14:00 UTC), on push to `main`, and manually from *Actions → Build and publish → Run workflow* (optionally only some versions, e.g. `8.4 8.5`). Each version is built natively on amd64 and arm64 runners, tested with [`test.sh`](test.sh), published as a multi-arch tag, scanned with Trivy, and the status table above is updated.
+- **GitHub Actions** ([`.github/workflows/build.yml`](.github/workflows/build.yml)): every night at 02:00 UTC, on push to `main`, and manually from *Actions → Build and publish → Run workflow* (optionally only some versions, e.g. `8.4 8.5`). Each version is built natively on amd64 and arm64 runners, tested with [`test.sh`](test.sh), published as a multi-arch tag, scanned with Trivy, and the status table above is updated.
 - **Locally**: `./build.sh 8.4` (docker or podman), `./build.sh all`, `PUSH=1 ./build.sh 8.4` for a multi-arch push. Test with `./test.sh openpanel/php-fpm:8.4`.
 - PHP versions and their base images are listed in [`versions.txt`](versions.txt).
 
