@@ -41,7 +41,7 @@ docker run -d --name php -m 512m -v ./site:/var/www/html -p 9000:9000 openpanel/
 
 | Tag | PHP | Debian base | Notes |
 |---|---|---|---|
-| `openpanel/php-fpm:8.6` | 8.6 | trixie | pre-release (RC) until PHP 8.6 GA, PECL extensions added as they gain support |
+| `openpanel/php-fpm:8.6` | 8.6 | trixie | |
 | `openpanel/php-fpm:8.5` | 8.5 | trixie | |
 | `openpanel/php-fpm:8.4` | 8.4 | trixie | |
 | `openpanel/php-fpm:8.3` | 8.3 | trixie | |
