@@ -66,7 +66,11 @@ loaded() {
 REQUIRED="bcmath calendar exif ftp gd gettext intl mysqli opcache pcntl pdo_mysql pdo_pgsql pgsql tidy zip uuid"
 # pecl extensions: required too, only a pre-release PHP (RC) may ship without the ones that don't support it yet
 OPTIONAL="igbinary msgpack apcu yaml redis"
+# PHP minors that are GA but some PECL extensions haven't released support yet: built like a pre-release (missing ones skipped),
+# remove a version from here once all of OPTIONAL build for it, so a missing extension fails the build again
+PECL_PENDING="8.6"
 PRERELEASE=0; case "$(php -r 'echo PHP_VERSION;')" in *RC*|*alpha*|*beta*|*dev*) PRERELEASE=1 ;; esac
+case " $PECL_PENDING " in *" $PHP_MM "*) PRERELEASE=1 ;; esac
 
 # pecl.php.net and the apt mirrors time out now and then, retry each install
 ipe() { for i in 1 2 3; do install-php-extensions "$@" && return 0; echo "!!! install-php-extensions $* failed (attempt $i)"; sleep $((i * 20)); done; return 1; }
@@ -80,10 +84,10 @@ for e in $OPTIONAL; do loaded "$e" || opt="$opt $e"; done
 # one install-php-extensions run is much faster (build deps installed/removed once)
 # shellcheck disable=SC2086
 if [ "$PRERELEASE" = 1 ]; then
-    # pre-release PHP: PECL extensions that don't support it yet fail, one try each and skip them
+    # pre-release or PECL_PENDING PHP: PECL extensions that don't support it yet fail, one try each and skip them
     [ -n "$todo" ] && ipe $todo
     for e in $opt; do
-        install-php-extensions "$e" || echo "!!! WARNING: $e doesn't build on pre-release PHP ${PHP_MM} yet, skipping"
+        install-php-extensions "$e" || echo "!!! WARNING: $e doesn't build on PHP ${PHP_MM} yet, skipping"
     done
 elif ! install-php-extensions $todo $opt; then
     echo "!!! combined install failed, retrying one by one"
