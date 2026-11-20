@@ -219,9 +219,9 @@ Updated by every build: PHP and Debian version, PHP upstream support, compressed
 | `openpanel/php-fpm:8.3` | 8.3.37 | 13 (trixie) | 🟡 security until 2027-12 | 87 MB / 86 MB | 2026-11-20 09:35 | 2m08s / 3m08s | 1 / 35 / 79 / 85 | ✅ none | ✅ all |
 | `openpanel/php-fpm:8.4` | 8.4.28 | 13 (trixie) | 🟢 active until 2026-12 | 90 MB / 89 MB | 2026-11-20 09:35 | 2m10s / 3m33s | 1 / 35 / 79 / 85 | ✅ none | ✅ all |
 | `openpanel/php-fpm:8.5` | 8.5.13 | 13 (trixie) | 🟢 active until 2027-12 | 92 MB / 91 MB | 2026-11-20 09:35 | 3m26s / 3m19s | 1 / 35 / 79 / 85 | ✅ none | ✅ all |
-| `openpanel/php-fpm:8.6` | 8.6.0RC7 | 13 (trixie) | 🟢 active until 2028-12 | 92 MB / 90 MB | 2026-11-19 10:09 | 3m47s / 5m01s | 1 / 35 / 79 / 85 | ✅ none | ⚠️ missing apcu, igbinary, msgpack, redis, yaml |
+| `openpanel/php-fpm:8.6` | 8.6.0 | 13 (trixie) | 🟢 active until 2028-12 | 91 MB / 90 MB | 2026-11-20 14:52 | 3m56s / 3m56s | 1 / 35 / 79 / 85 | ✅ none | ⚠️ missing apcu, igbinary, msgpack, redis, yaml |
 
-_Updated automatically by the build workflow, last run 2026-11-20 14:44 UTC._
+_Updated automatically by the build workflow, last run 2026-11-20 14:53 UTC._
 <!-- status:end -->
 
 ## FAQ
